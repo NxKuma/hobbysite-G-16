@@ -6,3 +6,9 @@ from .models import Post, PostCategory
 
 class ThreadListView(ListView):
     model = PostCategory
+    template_name = "threads.html"
+
+
+class ThreadDetailView(DetailView):
+    model = Post
+    template_name = "thread.html"
