@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %w}
-    <h2>{{comment.commission.title}}</h2>
-    <p>{{comment.commission.description}}</p>
-    <p>{{comment.commission.people_required}} people</p>
-    <p>Created on {{comment.commission.created_on}}</p>
-    <p>Updated on {{comment.commission.updated_on}}</p>
+    <h2>{{ comment.commission.title }}</h2>
+    <p>{{ comment.commission.description }}</p>
+    <p>{{ comment.commission.people_required }} people</p>
+    <p>Created on {{ comment.commission.created_on }}</p>
+    <p>Updated on {{ comment.commission.updated_on }}</p>
 
     <h2>Comments</h2>
-    <p>{{comment.entry}}</p>
-    <p>Created on {{comment.created_on}}</p>
-    <p>Updated on {{comment.updated_on}}</p>
+    <p>{{ comment.entry }}</p>
+    <p>Created on {{ comment.created_on }}</p>
+    <p>Updated on {{ comment.updated_on }}</p>
 {% endblock content %}
