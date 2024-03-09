@@ -3,22 +3,12 @@ from django.views.generic.detail import DetailView
 
 from .models import Product, ProductType
 
-class ProductListView(ListView):
+class ProductTypeListView(ListView):
     model = Product
-    template_name = 'product.html'
+    template_name = 'product_type_list.html'
 
 
-# class ProductDetailView(DetailView):
-#     model = Product
-#     template_name = 'product_detail.html'
-
-
-# class ProductTypeListView(ListView):
-#     model = ProductType
-#     template_name = 'producttype.html'
-
-
-class ProductTypeDetailView(DetailView):
+class ProductDetailView(DetailView):
     model = ProductType
-    template_name = 'producttype.html'
+    template_name = 'product.html'
     
