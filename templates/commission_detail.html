@@ -1,14 +1,17 @@
 {% extends "base.html" %}
 
-{% block content %w}
-    <h2>{{ comment.commission.title }}</h2>
-    <p>{{ comment.commission.description }}</p>
-    <p>{{ comment.commission.people_required }} people</p>
-    <p>Created on {{ comment.commission.created_on }}</p>
-    <p>Updated on {{ comment.commission.updated_on }}</p>
+{% block content %}
+    <h2>{{ commission.title }}</h2>
+    <p>{{ commission.description }}</p>
+    <p>{{ commission.people_required }} people</p>
+    <p>Created on {{ commission.created_on }}</p>
+    <p>Updated on {{ commission.updated_on }}</p>
 
     <h2>Comments</h2>
-    <p>{{ comment.entry }}</p>
-    <p>Created on {{ comment.created_on }}</p>
-    <p>Updated on {{ comment.updated_on }}</p>
+    {% for comment in commission.comment.all %}
+    <li>{{ comment.comment.entry  }}</li>
+    <li>created: {{ comment.comment.created_on  }}</li>
+    <li>updated: {{ comment.comment.updated_on  }}</li>
+    {% endfor %}
+
 {% endblock content %}
