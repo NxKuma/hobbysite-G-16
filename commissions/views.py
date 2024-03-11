@@ -3,6 +3,7 @@ from django.views.generic.detail import DetailView
 
 from .models import Commission
 
+
 class CommissionListView(ListView):
 	model = Commission
 	template_name = "commission_list.html"

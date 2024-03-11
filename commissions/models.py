@@ -3,6 +3,7 @@ from datetime import datetime
 from django.db import models
 from django.urls import reverse
 
+
 class Commission(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
