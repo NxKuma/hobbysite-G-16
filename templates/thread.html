@@ -2,8 +2,10 @@
 
 {% block title %} {{ name }} {% endblock %}
 {% block content %}
-    <h2>{{ thread.title }}</h2>
+    <h1>{{ post.title }}</h1>
+    <h3>Post Category: {{ post.category }}</h3>
+    <p>{{ post.entry }}</p>
 
-    <p>{{ thread }}</p>
+    <p>Created On: {{ post.created_on }} |   Updated On: {{ post.updated_on }}  </p>
     
 {% endblock %}
