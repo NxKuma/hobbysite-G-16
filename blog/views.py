@@ -9,8 +9,8 @@ from ledger.models import Article
 
 class ArticleListView(ListView):
 	model = Article  
-	template_name = "recipes_list.html"
+	template_name = "article_list.html"
 
 class ArticleDetailView(DetailView):
 	model = Article
-	template_name = "recipe.html"
+	template_name = "article.html"
