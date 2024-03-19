@@ -1,8 +1,8 @@
 from datetime import datetime
 from django.urls import reverse
 
-
 from django.db import models
+
 
 class PostCategory(models.Model):
     name = models.CharField(max_length=255)

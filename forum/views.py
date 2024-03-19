@@ -4,6 +4,7 @@ from django.views.generic.detail import DetailView
 
 from .models import Post, PostCategory
 
+
 class ThreadListView(ListView):
     model = Post
     template_name = "threads.html"
