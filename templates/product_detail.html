@@ -1,7 +1,14 @@
 {% extends "base.html" %}
 
+{% block title %}Merchandise Store{% endblock title %}
+
 {% block content %}
-    <h2>{{ product.name }}</h2>
-    <h3>{{ product.price }}</h3>
-    <p>{{ product.description }}</p>
+<h1>Merchandise Store</h1>
+    <ul>
+        <h2>{{ product.name }}, P {{ product.price }}</h2>
+        <ul>
+            <li>Product type: {{ product.product_type.name }}</li>
+            <li>Description: {{ product.description }}</li>
+        </ul>
+    </ul>
 {% endblock content %}
