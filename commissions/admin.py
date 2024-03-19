@@ -7,12 +7,12 @@ class CommentInline(admin.StackedInline):
     model = Comment
 
 
-class CommissionAdmin(admin.ModelAdmin):
-    model = Commission
-
-
 class CommentAdmin(admin.ModelAdmin):
     model = Comment
+
+
+class CommissionAdmin(admin.ModelAdmin):
+    model = Commission
     inlines = [CommentInline]
 
 
