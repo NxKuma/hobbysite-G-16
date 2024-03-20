@@ -4,9 +4,13 @@
 {% block content %}
     <h2>Threads</h2>
 
-    <ul>
-        {% for post in object_list %}
-            <li><a href="{{ post.get_absolute_url }}">{{ post.title }} | {{ post.category }}  </a></li>
-        {% endfor %} 
-    </ul>
+    
+    {% for post_category in object_list %}
+        <h1>{{post_category.name}}</h1>
+        <ul>
+            {% for post in post_category.posts.all %}
+            <li><a href="{{ post.get_absolute_url }}">{{ post.title }} </a></li>
+        </ul>
+    {% endfor %} 
+
 {% endblock %}
