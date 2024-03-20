@@ -1,15 +1,21 @@
-# Register your models here.
 from django.contrib import admin
+
 from .models import Article, ArticleCategory
 
 class ArticleInLine(admin.StackedInline):
+    model = Article
+
+
+class ArticleCategoryAdmin(admin.ModelAdmin):
     model = ArticleCategory
+    inlines = [ArticleInLine,]
+
 
 class ArticleAdmin(admin.ModelAdmin):
     model = Article
-    inlines = [ArticleInLine,]
 
 admin.site.register(Article, ArticleAdmin)
+admin.site.register(ArticleCategory, ArticleCategoryAdmin)
 
 
 

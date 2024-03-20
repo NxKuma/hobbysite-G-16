@@ -1,6 +1,8 @@
 from datetime import datetime
+
 from django.db import models
 from django.urls import reverse
+
 
 class ArticleCategory(models.Model):
     name = models.CharField(max_length=255)
@@ -15,12 +17,14 @@ class ArticleCategory(models.Model):
     class Meta:
         ordering = ['name']
 
+
 class Article(models.Model):
     title = models.CharField(max_length=255)
     article_cateogry = models.ForeignKey(
-        ArticleCategory,
+        'ArticleCategory',
         on_delete = models.SET_NULL,
-        related_name='article'
+        related_name='article',
+        null = True
     )
     entry = models.TextField()
     created_on = models.DateTimeField(auto_now_add=True)
