@@ -2,9 +2,13 @@
 
 {% block content %}
     <h2>Wiki</h2>
-    <ul>
-        {% for article in object_list %}
-            <li><a href="{{ article.get_absolute_url }}">{{ article.title }} | {{ article.article_category.name }}</a></li>
-        {% endfor %}
-    </ul>
+    {% for article_category in object_list %}
+        <h1>{{article_category.name}}</h1>
+        <ul>
+            {% for article in article_category.article.all %}
+            <li><a href="{{ article.get_absolute_url }}">{{ article.title }} </a></li>
+            {% endfor %} 
+        </ul>
+    {% endfor %} 
+
 {% endblock content %}
