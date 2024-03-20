@@ -18,7 +18,7 @@ class Commission(models.Model):
         return reverse('commissions:commission-detail', args=[self.pk])
 
     class Meta:
-        ordering = ['created_on']
+        ordering = ['created_on',]
 
 
 class Comment(models.Model):
@@ -35,4 +35,4 @@ class Comment(models.Model):
         return reverse('commissions:comment', args=[self.pk])
 
     class Meta:
-        ordering = ['-created_on']
+        ordering = ['-created_on',]

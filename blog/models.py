@@ -15,7 +15,7 @@ class ArticleCategory(models.Model):
         return reverse('blog:article-list', args=[self.pk])
     
     class Meta:
-        ordering = ['name']
+        ordering = ['name',]
 
 
 class Article(models.Model):
@@ -37,4 +37,4 @@ class Article(models.Model):
         return reverse('blog:article-detail', args=[self.pk])
 
     class Meta:
-        ordering = ['-created_on']
+        ordering = ['-created_on',]

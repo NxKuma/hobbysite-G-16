@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from .models import Product, ProductType
 
+
 class ProductAdmin(admin.ModelAdmin):
     model = Product
 
