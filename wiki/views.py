@@ -9,6 +9,7 @@ class ArticleListView(ListView):
 	model = Article  
 	template_name = "wiki-list.html"
 
+
 class ArticleDetailView(DetailView):
 	model = Article
 	template_name = "wiki-detail.html"
