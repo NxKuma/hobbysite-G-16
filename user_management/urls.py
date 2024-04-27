@@ -6,4 +6,4 @@ urlpatterns = [
     path('profile', ProfileUpdateView.as_view(), name='profile-update')
 ]
 
-app_name = 'profile'
+app_name = 'user_management'
