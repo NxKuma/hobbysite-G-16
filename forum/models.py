@@ -37,5 +37,4 @@ class Post(models.Model):
         return reverse('forum:thread-detail', args=[self.pk])
 
     class Meta:
-        ordering = ['-created_on',]  
-    
+        ordering = ['-created_on',]

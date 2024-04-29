@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Blog</h1>
+    <h2>{{article.title}}</h2>
+    <h3>{{article.article_category}}</h3>
+    <p>{{article.entry}}</p>    
+    <p>{{article.created_on}}</p>
+    <p>{{article.updated_on}}</p>
+{% endblock content %}

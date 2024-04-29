@@ -4,12 +4,20 @@
 {% block content %}
     <h2>Threads</h2>
 
+<<<<<<< HEAD
     
+=======
+>>>>>>> 9cee70e5317bc6d8f512e6d1708f3848110e0d0d
     {% for post_category in object_list %}
         <h1>{{post_category.name}}</h1>
         <ul>
             {% for post in post_category.posts.all %}
+<<<<<<< HEAD
             <li><a href="{{ post.get_absolute_url }}">{{ post.title }} </a></li>
+=======
+            <li><a href="{{ post.get_absolute_url }}">{{ post.title }} ({{ post.created_on}}) </a></li>
+            {% endfor %} 
+>>>>>>> 9cee70e5317bc6d8f512e6d1708f3848110e0d0d
         </ul>
     {% endfor %} 
 
