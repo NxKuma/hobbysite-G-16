@@ -63,7 +63,14 @@ ROOT_URLCONF = 'hobbysite.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, "templates")],
+        'DIRS': [
+            os.path.join(BASE_DIR, "templates"), 
+            os.path.join(BASE_DIR, "templates/forum"),
+            os.path.join(BASE_DIR, "templates/wiki"),
+            os.path.join(BASE_DIR, "templates/merchstore"),
+            os.path.join(BASE_DIR, "templates/blog"),
+            os.path.join(BASE_DIR, "templates/commission"),
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -130,7 +137,7 @@ STATICFILES_DIRS = [
 ]
 MEDIA_URL='/media/'
 MEDIA_ROOT=BASE_DIR/'media'
-LOGIN_REDIRECT_URL = '/recipes/list'
+LOGIN_REDIRECT_URL = '/accounts/login'
 LOGOUT_REDIRECT_URL = '/accounts/login'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
