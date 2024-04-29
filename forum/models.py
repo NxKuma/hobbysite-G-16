@@ -21,13 +21,20 @@ class ThreadCategory(models.Model):
 
 class Thread(models.Model):
     title = models.CharField(max_length=255)
+    author = models.ForeignKey(
+        profile_models.Profile,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='authors'
+    )
     category = models.ForeignKey(
         'ThreadCategory',
         on_delete=models.SET_NULL,
-        related_name='posts',
+        related_name='thread_category',
         null = True,
     )
     entry = models.TextField()
+    image = models.ImageField(upload_to='images/')
     created_on = models.DateTimeField(auto_now_add=True) 
     updated_on = models.DateTimeField(auto_now=True)
 
@@ -45,6 +52,7 @@ class Comment(models.Model):
     author = models.ForeignKey(
         profile_models.Profile,
         on_delete=models.SET_NULL,
+        null=True,
         related_name='author'
     )
     thread = models.ForeignKey(
