@@ -3,11 +3,13 @@ from datetime import datetime
 from django.db import models
 from django.urls import reverse
 
+from user_management.models import Profile
+
 
 class Commission(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
-    people_required = models.IntegerField()
+    status = models.CharField(max_length=12, choices=('open', 'full', 'completed', 'discontinued',), default='open')
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
 
@@ -21,18 +23,39 @@ class Commission(models.Model):
         ordering = ['created_on',]
 
 
-class Comment(models.Model):
+class Job(models.Model):
     commission = models.ForeignKey(
         'Commission',
         on_delete=models.CASCADE,
-        related_name='comment'
+        related_name='job'
     )
-    entry = models.TextField()
-    created_on = models.DateTimeField(auto_now_add=True)
-    updated_on = models.DateTimeField(auto_now=True)
+    role = models.CharField(max_length=255)
+    manpower_required = models.IntegerField()
+    status = models.CharField(max_length=4, choices=('open', 'full',), default='open')
     
     def get_absolute_url(self):
-        return reverse('commissions:comment', args=[self.pk])
+        return reverse('commissions:job', args=[self.pk])
 
     class Meta:
-        ordering = ['-created_on',]
+        ordering = ['status', '-manpower_required', 'role']
+
+
+class JobApplication
+    job = models.ForeignKey(
+        'Job',
+        on_delete=models.CASCADE,
+        related_name='job_application'
+    )
+    applicant = models.ForeignKey(
+        'Profile',
+        on_delete=models.CASCADE,
+        related_name='job_application'
+    )
+    status = models.CharField(max_length=8, choices=('pending', 'accepted', 'rejected',), default='pending')
+    applied_on = models.DateTimeField(auto_now_add=True)
+
+    def get_absolute_url(self):
+        return reverse('commissions:job_application', args=[self.pk])
+
+    class Meta:
+        ordering = ['status', '-applied_on']
