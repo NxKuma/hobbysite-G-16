@@ -25,4 +25,5 @@ class ThreadCreateView(LoginRequiredMixin, CreateView):
 
 class ThreadUpdateView(LoginRequiredMixin, UpdateView):
     model = Thread
+    form_class = ThreadForm
     template_name = "forum-update.html"
