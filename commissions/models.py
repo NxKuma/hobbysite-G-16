@@ -9,7 +9,8 @@ from user_management.models import Profile
 class Commission(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
-    status = models.CharField(max_length=12, choices=('open', 'full', 'completed', 'discontinued',), default='open')
+    status = models.CharField(max_length=12, choices=(('open','open'), ('full', 'full'), ('completed','completed'),
+        ('discontinued','discontinued'),), default='open')
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
 
@@ -31,7 +32,7 @@ class Job(models.Model):
     )
     role = models.CharField(max_length=255)
     manpower_required = models.IntegerField()
-    status = models.CharField(max_length=4, choices=('open', 'full',), default='open')
+    status = models.CharField(max_length=4, choices=(('open','open'), ('full','full'),), default='open')
     
     def get_absolute_url(self):
         return reverse('commissions:job', args=[self.pk])
@@ -51,7 +52,8 @@ class JobApplication:
         on_delete=models.CASCADE,
         related_name='job'
     )
-    status = models.CharField(max_length=8, choices=('pending', 'accepted', 'rejected',), default='pending')
+    status = models.CharField(max_length=8, choices=(('pending','pending'), ('accepted','accepted'),
+        ('rejected','rejected'),), default='pending')
     applied_on = models.DateTimeField(auto_now_add=True)
 
     def get_absolute_url(self):
