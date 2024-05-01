@@ -3,11 +3,16 @@ from datetime import datetime
 from django.db import models
 from django.urls import reverse
 
-from user_management.models import Profile
+from user_management import models as user_management_models
 
 
 class Commission(models.Model):
     title = models.CharField(max_length=255)
+    author = models.ForeignKey(
+        user_management_models.Profile,
+        on_delete=models.CASCADE,
+        related_name='commission'
+    )
     description = models.TextField()
     status = models.CharField(max_length=12, choices=(('open','open'), ('full', 'full'), ('completed','completed'),
         ('discontinued','discontinued'),), default='open')
@@ -48,7 +53,7 @@ class JobApplication:
         related_name='applicant'
     )
     applicant = models.ForeignKey(
-        'Profile',
+        user_management_models.Profile,
         on_delete=models.CASCADE,
         related_name='job'
     )
