@@ -2,10 +2,44 @@
 
 {% block title %} {{ name }} {% endblock %}
 {% block content %}
-    <h1>{{ post.title }}</h1>
-    <h3>Post Category: {{ post.category }}</h3>
-    <p>{{ post.entry }}</p>
+    <a href="{% url 'forum:thread-list' %}"><p>< Go Back to Threads </p></a>
+    <h1>{{ thread.title }}</h1>
+    <h3>Post Category: {{ thread.category }}</h3>
+    <p>{{ thread.entry }}</p>
 
-    <p>Created On: {{ post.created_on }} |   Updated On: {{ post.updated_on }}  </p>
+    <p>Created On: {{ thread.created_on }} |   Updated On: {{ thread.updated_on }}  </p>
     
+    <h2>Comments</h2>
+    <ul>
+        {% for comment in thread.comments.all  %}
+            <li>
+                <h4>{{ comment.author }}</h4>
+                <p>{{ comment.entry }}</p>
+                <p>Created On: {{ comment.created_on }} | Updated On: {{ comment.updated_on }}</p>
+            </li>
+        {% endfor %}
+    </ul>
+
+    {% if request.user.is_authenticated %}
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_div }}
+            <button type="submit">Submit</button>
+        </form>
+    {% endif %}
+
+    <h4>Related Threads</h4>
+    <ul>
+        {% for thread in threads_in_category %}
+            {% if forloop.counter0 <= 2 %}
+                {% if thread.pk != object.pk %}
+                    <li><a href="{{ thread.get_absolute_url }}">{{ thread.title }} ({{ thread.created_on}}) </a></li>
+                {% endif %}
+            {% endif %}
+
+            
+
+        {% endfor %} 
+    </ul>
+
 {% endblock %}

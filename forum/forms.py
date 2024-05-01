@@ -10,6 +10,8 @@ class ThreadForm(forms.ModelForm):
 
 
 class CommentForm(forms.ModelForm):
+    entry = forms.CharField(widget=forms.Textarea)
+
     class Meta:
         model = Comment
-        fields = '__all__'
+        fields = ["entry"]

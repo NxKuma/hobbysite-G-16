@@ -30,11 +30,11 @@ class Thread(models.Model):
     category = models.ForeignKey(
         'ThreadCategory',
         on_delete=models.SET_NULL,
-        related_name='thread_category',
+        related_name='threads',
         null = True,
     )
     entry = models.TextField()
-    image = models.ImageField(upload_to='images/')
+    image = models.ImageField(upload_to='images/', blank=True)
     created_on = models.DateTimeField(auto_now_add=True) 
     updated_on = models.DateTimeField(auto_now=True)
 
@@ -58,7 +58,7 @@ class Comment(models.Model):
     thread = models.ForeignKey(
         'Thread',
         on_delete=models.CASCADE,
-        related_name='threads'
+        related_name='comments'
     )
     entry = models.TextField()
     created_on = models.DateTimeField(auto_now_add=True) 
