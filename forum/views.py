@@ -14,11 +14,11 @@ class ThreadListView(ListView):
     template_name = "forum-list.html"
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+        ctx = super().get_context_data(**kwargs)
         author = ProfileModel.Profile.objects.get(user=self.request.user)
         threads_by_author = Thread.objects.filter(author=author)
-        context['threads_by_author'] = threads_by_author
-        return context
+        ctx['threads_by_author'] = threads_by_author
+        return ctx
 
 
 class ThreadDetailView(LoginRequiredMixin, DetailView):
@@ -27,11 +27,29 @@ class ThreadDetailView(LoginRequiredMixin, DetailView):
     template_name = "forum-detail.html"
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+        ctx = super().get_context_data(**kwargs)
         thread = self.get_object()
         threads_in_category = Thread.objects.filter(category=thread.category)
-        context['threads_in_category'] = threads_in_category
-        return context
+        ctx['threads_in_category'] = threads_in_category
+        ctx['form'] = CommentForm()
+        return ctx
+
+    def post(self, request, *args, **kwargs):
+          form = CommentForm(request.POST, initial={'author':self.request.user.id})
+          if form.is_valid():
+               form.save()
+               return self.get(request, *args, **kwargs)
+          else:
+               self.object_list = self.get_queryset(**kwargs)
+               ctx = self.get_context_data(**kwargs)
+               ctx['form'] = form
+               return self.render_to_response(ctx)
+          
+    def get_initial(self):
+        initial = super().get_initial()
+        if self.request.user.is_authenticated:
+            initial['author'] = self.request.user.id
+        return initial
 
 
 class ThreadCreateView(LoginRequiredMixin, CreateView):

@@ -3,12 +3,16 @@
 {% block title %} {{ name }} {% endblock %}
 {% block content %}
     <a href="{% url 'forum:thread-list' %}"><p>< Go Back to Threads </p></a>
-    <h1>{{ thread.title }}</h1>
-    <h3>Post Category: {{ thread.category }} | Author: {{ thread.author }}</h3>
+    <h1>{{ thread.title }} | {{ thread.category }} </h1>
+    <h3>Author: {{ thread.author }}</h3>
     <p>{{ thread.entry }}</p>
 
     <p>Created On: {{ thread.created_on }} |   Updated On: {{ thread.updated_on }}  </p>
     
+    {% if request.user.id == thread.author.pk %}
+        <a href="{% url 'forum:thread-update' pk=view.kwargs.pk %}"><button>Update Thread</button></a>
+    {% endif %}
+
     <h2>Comments</h2>
     <ul>
         {% for comment in thread.comments.all  %}
