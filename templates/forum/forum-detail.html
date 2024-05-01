@@ -4,7 +4,7 @@
 {% block content %}
     <a href="{% url 'forum:thread-list' %}"><p>< Go Back to Threads </p></a>
     <h1>{{ thread.title }}</h1>
-    <h3>Post Category: {{ thread.category }}</h3>
+    <h3>Post Category: {{ thread.category }} | Author: {{ thread.author }}</h3>
     <p>{{ thread.entry }}</p>
 
     <p>Created On: {{ thread.created_on }} |   Updated On: {{ thread.updated_on }}  </p>
