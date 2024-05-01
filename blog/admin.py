@@ -2,7 +2,6 @@ from django.contrib import admin
 
 from .models import Article, ArticleCategory
 
-
 class ArticleInLine(admin.StackedInline):
     model = Article
 

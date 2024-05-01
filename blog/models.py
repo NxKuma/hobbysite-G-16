@@ -3,6 +3,7 @@ from datetime import datetime
 from django.db import models
 from django.urls import reverse
 
+from user_management import models as profile_models
 
 class ArticleCategory(models.Model):
     name = models.CharField(max_length=255)
@@ -20,15 +21,22 @@ class ArticleCategory(models.Model):
 
 class Article(models.Model):
     title = models.CharField(max_length=255)
+    article_author = models.ForeignKey(
+        profile_models.Profile,
+        on_delete = models.SET_NULL,
+        related_name = 'authors',
+        null = True
+    )
     article_category = models.ForeignKey(
         'ArticleCategory',
         on_delete = models.SET_NULL,
-        related_name='article',
+        related_name = 'article_category',
         null = True
     )
     entry = models.TextField()
-    created_on = models.DateTimeField(auto_now_add=True)
-    updated_on = models.DateTimeField(auto_now=True)
+    image = models.ImageField(upload_to = 'images/')
+    created_on = models.DateTimeField(auto_now_add = True)
+    updated_on = models.DateTimeField(auto_now = True)
 
     def __str__(self):
         return self.title
@@ -38,3 +46,22 @@ class Article(models.Model):
 
     class Meta:
         ordering = ['-created_on',]
+
+class Article_Comment(models.Model):
+    article_author = models.ForeignKey(
+        profile_models.Profile,
+        on_delete = models.SET_NULL,
+        related_name = 'authors',
+        null = True
+    )
+    thread = models.ForeignKey(
+        'article',
+        on_delete=models.CASCADE,
+        related_name='articles'
+    )
+    entry = models.TextField()
+    created_on = models.DateTimeField(auto_now_add = True) 
+    updated_on = models.DateTimeField(auto_now = True)
+        
+    class Meta:
+        ordering = ['created_on',]
