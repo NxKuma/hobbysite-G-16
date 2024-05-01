@@ -40,16 +40,16 @@ class Job(models.Model):
         ordering = ['status', '-manpower_required', 'role']
 
 
-class JobApplication
+class JobApplication:
     job = models.ForeignKey(
         'Job',
         on_delete=models.CASCADE,
-        related_name='job_application'
+        related_name='applicant'
     )
     applicant = models.ForeignKey(
         'Profile',
         on_delete=models.CASCADE,
-        related_name='job_application'
+        related_name='job'
     )
     status = models.CharField(max_length=8, choices=('pending', 'accepted', 'rejected',), default='pending')
     applied_on = models.DateTimeField(auto_now_add=True)
