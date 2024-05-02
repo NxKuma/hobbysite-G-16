@@ -17,6 +17,7 @@ class ProductListView(ListView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
+            print(self.request.user)
             owner = ProfileModel.Profile.objects.get(user=self.request.user)
             products_by_owner = Product.objects.filter(owner=owner)
             ctx['products_by_owner'] = products_by_owner
@@ -29,23 +30,25 @@ class ProductDetailView(DetailView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         product = self.get_object()
-        transaction_form = TransactionForm(initial={'product': product})
-
-        if product.owner == self.request.user:
-            return redirect('merchstore-list')
+        buyer = ProfileModel.Profile.objects.get(user=self.request.user)
+        transaction_form = TransactionForm(initial={'product': product, 'buyer':buyer})
 
         ctx['transaction_form'] = transaction_form
         return ctx
     
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
-        transaction_form = TransactionForm(request.POST, initial={'product': self.object, 'buyer': self.request.user})
+        buyer = ProfileModel.Profile.objects.get(user=self.request.user)
+        transaction_form = TransactionForm(request.POST, initial={'product': self.object, 'buyer': buyer})
         if transaction_form.is_valid():
             transaction = transaction_form.save(commit=False)
             transaction.buyer = ProfileModel.Profile.objects.get(user=self.request.user)
             transaction.save()
-            return redirect('cart')
-        ctx = self.get_context_data(object=self.object, transaction_from=transaction_form )
+            self.object.stock -= transaction.amount
+            self.object.save()
+            print(self.object.stock)
+            return redirect('merchstore:cart')
+        ctx = self.get_context_data(object=self.object, transaction_form=transaction_form)
         return self.render_to_response(ctx)
 
 class ProductCreateView(LoginRequiredMixin, CreateView):
@@ -71,12 +74,12 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
     #     return initial
 
 
-class ProductUpdateView(DetailView):
+class ProductUpdateView(UpdateView):
     model = Product
     template_name = 'merchstore-update.html'
 
 
-class CartView(DetailView):
+class CartView(ListView):
     model = Transaction
     template_name = 'merchstore-cart.html'
 

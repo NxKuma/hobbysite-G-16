@@ -16,10 +16,15 @@
         </ul>
     </ul>
     <h2>Purchase</h2>
+
     <form method="post">
         {% csrf_token %}
         {{ transaction_form }}  
-        <button type="submit">Buy Now</button>
+        {% if product.stock == 0 %}
+            <button type="submit" disabled>Buy Now</button>
+        {% else %}
+            <button type="submit">Buy Now</button>
+        {% endif %}
     </form>
 
 {% endblock content %}

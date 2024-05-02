@@ -3,12 +3,12 @@
 {% block title %}Merchandise Store{% endblock title %}
 
 {% block content %}
-    <h1>Your cart</h1>
-        {% for transaction in object_list %}
-            <h2>Name: {{ transaction.product.name }}</h2>
-            <li>Buyer: {{ transaction.buyer.name }}</li>
-            <li>Amount: {{ transaction.amount }}</li>
-            <li>Status: {{ transaction.status }}</li>
-            <li>Created on: {{ transaction.created_on }}</li>
-        {% endfor %}
+    <h1>Your Cart</h1>
+    {% for transaction in object_list %}
+        <h2>Product: {{ transaction.product.name }}</h2>
+        <li>Buyer: {{ transaction.buyer.display_name }}</li>
+        <li>Amount: {{ transaction.amount }}</li>
+        <li>Status: {{ transaction.status }}</li>
+        <li>Created on: {{ transaction.created_on }}</li>
+    {% endfor %}
 {% endblock content %}
