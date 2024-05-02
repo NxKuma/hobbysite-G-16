@@ -41,7 +41,7 @@
         {% for thread in threads_in_category %}
             {% if forloop.counter0 <= 2 %}
                 {% if thread.pk != object.pk %}
-                    <li><a href="{{ thread.get_absolute_url }}">{{ thread.title }} ({{ thread.created_on}}) </a></li>
+                    <li><a href="{{ thread.get_absolute_url }}">{{ thread.title }}</a></li>
                 {% endif %}
             {% endif %}
 
