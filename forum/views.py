@@ -98,3 +98,12 @@ class ThreadUpdateView(LoginRequiredMixin, UpdateView):
     model = Thread
     form_class = ThreadForm
     template_name = "forum-update.html"
+
+    def get_success_url(self):
+        return reverse_lazy('forum:thread-detail', kwargs={
+            'pk': self.object.pk
+        })
+    
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
