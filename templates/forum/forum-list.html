@@ -11,11 +11,9 @@
                     <li><a href="{{ thread.get_absolute_url }}">{{ thread.title }} ({{ thread.created_on}}) </a></li>
                 {% endfor %} 
             </ul>
+        <h2><a href="{% url 'forum:thread-create' %}">Add Thread</a></h2>
     {% endif %}
 
-
-    <h2><a href="{% url 'forum:thread-create' %}">Add Thread</a></h2>
-    
     <h1>All Threads</h1>
     {% for thread_category in object_list %}
         <h2>{{thread_category.name}}</h2>
