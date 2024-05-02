@@ -34,6 +34,7 @@ class ThreadDetailView(LoginRequiredMixin, DetailView):
             thread = self.get_object()
             threads_in_category = Thread.objects.filter(category=thread.category)
             ctx['threads_in_category'] = threads_in_category
+            ctx['viewer'] = author
             ctx['form'] = CommentForm(
                 initial={
                     'author':author, 
