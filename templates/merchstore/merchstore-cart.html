@@ -3,13 +3,12 @@
 {% block title %}Merchandise Store{% endblock title %}
 
 {% block content %}
-<h1>Merchandise Store</h1>
-{% for product_type in object_list %}
-    <h2>{{ product_type.name }}</h2>
-    <ul>
-        {% for product in product_type.products.all %}    
-            <li><h3><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h3></li>
+    <h1>Your cart</h1>
+        {% for transaction in object_list %}
+            <h2>Name: {{ transaction.product.name }}</h2>
+            <li>Buyer: {{ transaction.buyer.name }}</li>
+            <li>Amount: {{ transaction.amount }}</li>
+            <li>Status: {{ transaction.status }}</li>
+            <li>Created on: {{ transaction.created_on }}</li>
         {% endfor %}
-    </ul>
-{% endfor %}
 {% endblock content %}
