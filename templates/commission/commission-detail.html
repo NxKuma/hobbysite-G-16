@@ -7,12 +7,12 @@
     <p> Created on {{ commission.created_on }}<br>
         Updated on {{ commission.updated_on }}</p>
 
-    <h2>Comments</h2>
-    <!-- {% for comment in commission.comment.all %}
-        <p>{{ comment.entry }}</p>
-        <p> created: {{ comment.created_on }} <br>
-            updated: {{ comment.updated_on }} </p>
-        <br>    -->
-    {% endfor %}
+    <h6>Job List</h6>
+        {% for job in commission.job.all %}
+        <li>{{  job.job.role  }}</li>
+        {% endfor %}
 
+    <h6>Sum of manpower: {{ total_manpower_required }}</h6>
+    <h6>Open manpower: {{ open_manpower }}</h6>
+        
 {% endblock content %}
