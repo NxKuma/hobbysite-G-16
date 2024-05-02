@@ -12,17 +12,14 @@
     {% if request.user.id == thread.author.pk %}
         <a href="{% url 'forum:thread-update' pk=view.kwargs.pk %}"><button>Update Thread</button></a>
     {% endif %}
-
+    <br>
     <h2>Comments</h2>
-    <ul>
-        {% for comment in thread.comments.all  %}
-            <li>
-                <h4>{{ comment.author }}</h4>
-                <p>{{ comment.entry }}</p>
-                <p>Created On: {{ comment.created_on }} | Updated On: {{ comment.updated_on }}</p>
-            </li>
-        {% endfor %}
-    </ul>
+    {% for comment in thread.comments.all  %}
+            <h4>{{ comment.author }}</h4>
+            <p>{{ comment.entry }}</p>
+            <p>Created On: {{ comment.created_on }} | Updated On: {{ comment.updated_on }}</p>
+            <hr>
+    {% endfor %}
 
     {% if request.user.is_authenticated %}
         <form method="POST">
@@ -31,6 +28,7 @@
             <button type="submit">Submit</button>
         </form>
     {% endif %}
+    <br>
 
     <h4>Related Threads</h4>
     <ul>
