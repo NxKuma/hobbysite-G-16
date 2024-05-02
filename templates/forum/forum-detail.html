@@ -14,9 +14,12 @@
 
     <p>Created On: {{ thread.created_on }} |   Updated On: {{ thread.updated_on }}  </p>
     
-    {% if viewer == thread.author %}
-        <a href="{% url 'forum:thread-update' pk=view.kwargs.pk %}"><button>Update Thread</button></a>
-        <br>
+    
+    {% if request.user.is_authenticated %}
+        {% if viewer == thread.author %}
+            <a href="{% url 'forum:thread-update' pk=view.kwargs.pk %}"><button>Update Thread</button></a>
+            <br>
+        {% endif %}
     {% endif %}
     <br>
     <h2>Comments</h2>
@@ -36,7 +39,7 @@
     {% endif %}
     <br>
 
-    <h4>Related Threads</h4>
+    <h4>Related Threads in {{ thread.category }}</h4>
     <ul>
         {% for thread in threads_in_category %}
             {% if forloop.counter0 <= 2 %}

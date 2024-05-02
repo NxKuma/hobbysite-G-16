@@ -25,12 +25,13 @@ class Article(models.Model):
     author = models.ForeignKey(
         ProfileModel.Profile,
         on_delete = models.SET_NULL,
-        related_name='author'
+        related_name='author_articles',
+        null=True,
     )
     article_category = models.ForeignKey(
         'ArticleCategory',
         on_delete = models.SET_NULL,
-        related_name='article',
+        related_name='articles',
         null = True
     )
     header_image = models.ImageField(upload_to='images/')
@@ -52,7 +53,8 @@ class Comment(models.Model):
     author = models.ForeignKey(
         ProfileModel.Profile,
         on_delete=models.SET_NULL,
-        related_name='comments'
+        related_name='comments',
+        null=True,
     )
     article = models.ForeignKey(
         'Article',

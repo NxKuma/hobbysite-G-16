@@ -23,26 +23,27 @@ class ThreadListView(ListView):
         return ctx
 
 
-class ThreadDetailView(LoginRequiredMixin, DetailView):
+class ThreadDetailView(DetailView):
     model = Thread
     template_name = "forum-detail.html"
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         if self.object:
-            author = ProfileModel.Profile.objects.get(user=self.request.user)
             thread = self.get_object()
             threads_in_category = Thread.objects.filter(category=thread.category)
             ctx['threads_in_category'] = threads_in_category
-            ctx['viewer'] = author
-            ctx['form'] = CommentForm(
+            if self.request.user.is_authenticated:
+                author = ProfileModel.Profile.objects.get(user=self.request.user)
+                ctx['viewer'] = author
+                ctx['form'] = CommentForm(
                 initial={
-                    'author':author, 
-                    'thread':Thread.objects.get(pk=thread.pk)
-                }
-            )
+                        'author':author, 
+                        'thread':Thread.objects.get(pk=thread.pk)
+                    }
+                )
         return ctx
-
+    
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         author = ProfileModel.Profile.objects.get(user=self.request.user)
