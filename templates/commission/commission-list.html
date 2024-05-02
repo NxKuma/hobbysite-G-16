@@ -2,26 +2,18 @@
 
 {% block content %}
     {% if request.user.is_authenticated %}
-    
         <h2>Created Commissions</h2>
         <ul>
-            {% for commission in object_list %}
-                {if commission.author.pk == request.user.id}
-                    <li><a href="{{ commission.get_absolute_url }}">{{ commission.title }}</a></li>
-                {% endif %}
+            {% for commission in commission_by_user %}
+                <li><a href="{{ commission.get_absolute_url }}">{{ commission.title }}</a></li>
             {% endfor %}
         </ul>
-
-        <!-- not yet working -->
         <h2>Applied Commissions</h2>
         <ul>
-            {% for commission in object_list %}
-                {if commission.author.pk == request.user.id}
-                    <li><a href="{{ commission.get_absolute_url }}">{{ commission.title }}</a></li>
-                {% endif %}
+            {% for commission in applied_by_user %}
+                <li><a href="{{ commission.get_absolute_url }}">{{ commission.title }}</a></li>
             {% endfor %}
         </ul>
-
     {% endif %}
     <h2>All Commissions</h2>
     <ul>
