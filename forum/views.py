@@ -29,40 +29,42 @@ class ThreadDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        author = ProfileModel.Profile.objects.get(user=self.request.user)
-        thread = self.get_object()
-        threads_in_category = Thread.objects.filter(category=thread.category)
-        ctx['threads_in_category'] = threads_in_category
-        ctx['form'] = CommentForm(
-            initial={
-                'author':author, 
-                'thread':Thread.objects.get(pk=thread.pk)
-            }
-        )
+        if self.object:
+            author = ProfileModel.Profile.objects.get(user=self.request.user)
+            thread = self.get_object()
+            threads_in_category = Thread.objects.filter(category=thread.category)
+            ctx['threads_in_category'] = threads_in_category
+            ctx['viewer'] = author
+            ctx['form'] = CommentForm(
+                initial={
+                    'author':author, 
+                    'thread':Thread.objects.get(pk=thread.pk)
+                }
+            )
         return ctx
 
     def post(self, request, *args, **kwargs):
-        form = CommentForm(request.POST)
+        self.object = self.get_object()
+        author = ProfileModel.Profile.objects.get(user=self.request.user)
+        thread = self.get_object()  # Get object if needed for context
+        form = CommentForm(request.POST,initial={
+                    'author':author, 
+                    'thread':Thread.objects.get(pk=thread.pk)
+                }
+            )
         if form.is_valid():
             comment = form.save(commit=False)
-            comment.author = self.request.user
-            comment.post = self.get_object()
+            comment.author = author
+            comment.post = thread
             comment.save()
-            return redirect('.', pk=self.object.pk)
-        else:
-            ctx = self.get_context_data(**kwargs)
-            ctx['form'] = form
-            return self.render_to_response(ctx)
-          
-    def get_initial(self):
-        initial = super().get_initial()
-        if self.request.user.is_authenticated:
-            initial['author'] = self.request.user.id
-        return initial
+            return redirect('forum:thread-detail', pk=self.object.pk)
+        ctx = self.get_context_data(**kwargs)
+        return self.render_to_response(ctx)
+        
     
     def form_valid(self, form):
-        form.instance.author = self.request.user
-        form.instance.post_id = self.kwargs['pk']
+        author = ProfileModel.Profile.objects.get(user=self.request.user)
+        form.instance.author = author
         return super().form_valid(form)
 
 
@@ -79,14 +81,17 @@ class ThreadCreateView(LoginRequiredMixin, CreateView):
     
     def form_valid(self, form):
         form.instance.user = self.request.user
-        form.instance.display_name = form.cleaned_data['author']
         return super().form_valid(form)
     
-    def get_initial(self):
-        initial = super().get_initial()
-        if self.request.user.is_authenticated:
-            initial['author'] = self.request.user.id
-        return initial
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        author = ProfileModel.Profile.objects.get(user=self.request.user)
+        ctx['form'] = ThreadForm(
+            initial={
+                'author':author,
+            }
+        )
+        return ctx
 
 
 class ThreadUpdateView(LoginRequiredMixin, UpdateView):

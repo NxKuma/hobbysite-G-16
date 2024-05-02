@@ -2,7 +2,7 @@
 
 {% block title %} {{ name }} {% endblock %}
 {% block content %}
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_div }}
         <button>Submit</button>
