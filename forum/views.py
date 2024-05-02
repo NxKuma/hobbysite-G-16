@@ -53,12 +53,6 @@ class ThreadDetailView(LoginRequiredMixin, DetailView):
             ctx = self.get_context_data(**kwargs)
             ctx['form'] = form
             return self.render_to_response(ctx)
-          
-    def get_initial(self):
-        initial = super().get_initial()
-        if self.request.user.is_authenticated:
-            initial['author'] = self.request.user.id
-        return initial
     
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -82,11 +76,15 @@ class ThreadCreateView(LoginRequiredMixin, CreateView):
         form.instance.display_name = form.cleaned_data['author']
         return super().form_valid(form)
     
-    def get_initial(self):
-        initial = super().get_initial()
-        if self.request.user.is_authenticated:
-            initial['author'] = self.request.user.id
-        return initial
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        author = ProfileModel.Profile.objects.get(user=self.request.user)
+        ctx['form'] = ThreadForm(
+            initial={
+                'author':author,
+            }
+        )
+        return ctx
 
 
 class ThreadUpdateView(LoginRequiredMixin, UpdateView):
