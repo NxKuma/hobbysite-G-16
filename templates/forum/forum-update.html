@@ -2,10 +2,9 @@
 
 {% block title %} {{ name }} {% endblock %}
 {% block content %}
-    <h1>{{ post.title }}</h1>
-    <h3>Post Category: {{ post.category }}</h3>
-    <p>{{ post.entry }}</p>
-
-    <p>Created On: {{ post.created_on }} |   Updated On: {{ post.updated_on }}  </p>
-    
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_div }}
+        <button>Submit</button>
+    </form>
 {% endblock %}
