@@ -11,7 +11,15 @@
             <li>Product Type: {{ product.product_type.name }}</li>
             <li>Price: P {{ product.price }}</li>
             <li>Description: {{ product.description }}</li>
+            <li>Stock: {{ product.stock }}</li>
+            <li>Seller: {{ product.owner }}</li>
         </ul>
     </ul>
+    <h2>Purchase</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ transaction_form }}  
+        <button type="submit">Buy Now</button>
+    </form>
 
 {% endblock content %}
