@@ -18,12 +18,19 @@
             padding-left: 0.5%;
         }        
     </style>
-
 </head>
 <body>
     <header>
         <h1>(～￣▽￣)～☆ HOBBYSITE ☆～(￣▽￣～)</h1>
     </header>
+    {% if request.user.is_authenticated %}
+        <form action="{% url 'logout' %}" method="POST">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+        </form>
+    {% else %}
+        <a href="{% url 'login' %}">Login</a>
+    {% endif %}
     <div id="content">
         {% block content %}{% endblock %}
     </div>
