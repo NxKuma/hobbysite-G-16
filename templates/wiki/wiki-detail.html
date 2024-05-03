@@ -21,13 +21,6 @@
     <br>
 
     <h2>Comments</h2>
-    {% for comment in article.article_comments.all  %}
-            <h4>{{ comment.author }}</h4>
-            <p>{{ comment.entry }}</p>
-            <p>Created On: {{ comment.created_on }} | Updated On: {{ comment.updated_on }}</p>
-            <hr>
-    {% endfor %}
-
     {% if request.user.is_authenticated %}
         <form method="POST">
             {% csrf_token %}
@@ -36,6 +29,12 @@
         </form>
     {% endif %}
 
+    {% for comment in article.article_comments.all reversed %}
+            <hr>
+            <h4>{{ comment.author }}</h4>
+            <p>{{ comment.entry }}</p>
+            <p>Created On: {{ comment.created_on }} | Updated On: {{ comment.updated_on }}</p>
+    {% endfor %}
     <br>
 
     <h4>Related Articles in {{ article.article_category }}</h4>

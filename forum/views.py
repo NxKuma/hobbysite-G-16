@@ -1,3 +1,5 @@
+from django.forms import BaseModelForm
+from django.http import HttpResponse
 from django.views.generic.list import ListView
 from django.urls import reverse_lazy
 from django.shortcuts import redirect
@@ -80,10 +82,19 @@ class ThreadCreateView(LoginRequiredMixin, CreateView):
             'pk': self.object.pk
         })
     
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        return super().form_valid(form)
+    def get_initial(self):
+        author = ProfileModel.Profile.objects.get(
+            user=self.request.user
+        )
+        return {'author':author}
     
+    def form_valid(self, form):
+        author = ProfileModel.Profile.objects.get(
+            user=self.request.user
+        )
+        form.instance.author = author
+        return super().form_valid(form)
+
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         author = ProfileModel.Profile.objects.get(user=self.request.user)
