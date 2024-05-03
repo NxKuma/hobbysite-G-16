@@ -10,7 +10,8 @@ class ArticleForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
+        self.fields['author'].disabled = True
+        
 
 class CommentForm(forms.ModelForm):
     class Meta:
@@ -19,3 +20,5 @@ class CommentForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['author'].disabled = True
+        self.fields['thread'].disabled = True

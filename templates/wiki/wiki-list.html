@@ -1,16 +1,35 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h2>Wiki</h2>
+    <h1>Wiki</h1>
 
-    
+    {% if request.user.is_authenticated %}
+        <h1>My Articles</h1>
+            <ul>
+                {% for article in articles_by_author %}
+                    <li><a href="{{ article.get_absolute_url }}">{{ article.title }}</a></li>
+                {% endfor %} 
+            </ul>
+    {% endif %}
+
+    <h2><a href="{% url 'wiki:article-create' %}">Add Thread</a></h2>
+
+
+    <h1>All Articles</h1>
     {% for article_category in object_list %}
-        <h1>{{article_category.name}}</h1>
+        <h2>{{article_category.name}}</h2>
         <ul>
-            {% for article in article_category.article.all %}
-            <li><a href="{{ article.get_absolute_url }}">{{ article.title }} </a></li>
-            {% endfor %} 
+            {% if request.user.is_authenticated %}
+                {% for article in article_category.articles.all %}
+                    {% if article not in articles_by_author %}
+                        <li><a href="{{ article.get_absolute_url }}">{{ article.title }}</a></li>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                {% for article in article_category.articles.all %}
+                    <li><a href="{{ article.get_absolute_url }}">{{ article.title }}</a></li>
+                {% endfor %}
+            {% endif %}
         </ul>
     {% endfor %} 
-
-{% endblock content %}
+{% endblock %}
