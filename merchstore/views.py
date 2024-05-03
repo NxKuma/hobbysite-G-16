@@ -17,7 +17,6 @@ class ProductListView(ListView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
-            print(self.request.user)
             owner = ProfileModel.Profile.objects.get(user=self.request.user)
             products_by_owner = Product.objects.filter(owner=owner)
             ctx['products_by_owner'] = products_by_owner
@@ -27,28 +26,34 @@ class ProductDetailView(DetailView):
     model = Product
     template_name = 'merchstore-detail.html'
 
+    def get_current_user(self):
+        user = ProfileModel.Profile.objects.get(user=self.request.user)
+        return user
+
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         product = self.get_object()
-        buyer = ProfileModel.Profile.objects.get(user=self.request.user)
-        transaction_form = TransactionForm(initial={'product': product, 'buyer':buyer})
-
+        if self.request.user.is_authenticated:
+            buyer = self.get_current_user() 
+            transaction_form = TransactionForm(initial={'product': product, 'buyer':buyer})
+            ctx['buyer'] = buyer
+        transaction_form = TransactionForm(initial={'product': product})
         ctx['transaction_form'] = transaction_form
         return ctx
     
     def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        buyer = ProfileModel.Profile.objects.get(user=self.request.user)
-        transaction_form = TransactionForm(request.POST, initial={'product': self.object, 'buyer': buyer})
+        product = self.get_object()
+        buyer = self.get_current_user()
+        transaction_form = TransactionForm(request.POST)
         if transaction_form.is_valid():
             transaction = transaction_form.save(commit=False)
-            transaction.buyer = ProfileModel.Profile.objects.get(user=self.request.user)
+            transaction.product = product
+            transaction.buyer = buyer
+            product.stock -= transaction.amount
             transaction.save()
-            self.object.stock -= transaction.amount
-            self.object.save()
-            print(self.object.stock)
+            product.save()
             return redirect('merchstore:cart')
-        ctx = self.get_context_data(object=self.object, transaction_form=transaction_form)
+        ctx = self.get_context_data(object=product, transaction_form=transaction_form)
         return self.render_to_response(ctx)
 
 class ProductCreateView(LoginRequiredMixin, CreateView):
@@ -65,13 +70,6 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
             }
         )
         return ctx
-
-
-    # def get_initial(self):
-    #     initial = super().get_initial()
-    #     if self.request.user.is_authenticated:
-    #         initial['owner'] = self.request.user.id
-    #     return initial
 
 
 class ProductUpdateView(UpdateView):
