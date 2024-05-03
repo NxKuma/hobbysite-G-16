@@ -8,11 +8,12 @@
         <h1>My Threads</h1>
             <ul>
                 {% for thread in threads_by_author %}
-                    <li><a href="{{ thread.get_absolute_url }}">{{ thread.title }} ({{ thread.created_on}}) </a></li>
+                    <li><a href="{{ thread.get_absolute_url }}">{{ thread.title }}</a></li>
                 {% endfor %} 
             </ul>
-        <h2><a href="{% url 'forum:thread-create' %}">Add Thread</a></h2>
     {% endif %}
+
+    <h2><a href="{% url 'forum:thread-create' %}">Add Thread</a></h2>
 
     <h1>All Threads</h1>
     {% for thread_category in object_list %}
@@ -21,12 +22,12 @@
             {% if request.user.is_authenticated %}
                 {% for thread in thread_category.threads.all %}
                     {% if thread not in threads_by_author %}
-                        <li><a href="{{ thread.get_absolute_url }}">{{ thread.title }} ({{ thread.created_on}}) </a></li>
+                        <li><a href="{{ thread.get_absolute_url }}">{{ thread.title }}</a></li>
                     {% endif %}
                 {% endfor %}
             {% else %}
                 {% for thread in thread_category.threads.all %}
-                    <li><a href="{{ thread.get_absolute_url }}">{{ thread.title }} ({{ thread.created_on}}) </a></li>
+                    <li><a href="{{ thread.get_absolute_url }}">{{ thread.title }}</a></li>
                 {% endfor %}
             {% endif %}
         </ul>

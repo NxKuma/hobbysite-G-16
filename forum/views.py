@@ -1,3 +1,5 @@
+from django.forms import BaseModelForm
+from django.http import HttpResponse
 from django.views.generic.list import ListView
 from django.urls import reverse_lazy
 from django.shortcuts import redirect
@@ -23,26 +25,27 @@ class ThreadListView(ListView):
         return ctx
 
 
-class ThreadDetailView(LoginRequiredMixin, DetailView):
+class ThreadDetailView(DetailView):
     model = Thread
     template_name = "forum-detail.html"
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         if self.object:
-            author = ProfileModel.Profile.objects.get(user=self.request.user)
             thread = self.get_object()
             threads_in_category = Thread.objects.filter(category=thread.category)
             ctx['threads_in_category'] = threads_in_category
-            ctx['viewer'] = author
-            ctx['form'] = CommentForm(
+            if self.request.user.is_authenticated:
+                author = ProfileModel.Profile.objects.get(user=self.request.user)
+                ctx['viewer'] = author
+                ctx['form'] = CommentForm(
                 initial={
-                    'author':author, 
-                    'thread':Thread.objects.get(pk=thread.pk)
-                }
-            )
+                        'author':author, 
+                        'thread':Thread.objects.get(pk=thread.pk)
+                    }
+                )
         return ctx
-
+    
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         author = ProfileModel.Profile.objects.get(user=self.request.user)
@@ -79,10 +82,19 @@ class ThreadCreateView(LoginRequiredMixin, CreateView):
             'pk': self.object.pk
         })
     
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        return super().form_valid(form)
+    def get_initial(self):
+        author = ProfileModel.Profile.objects.get(
+            user=self.request.user
+        )
+        return {'author':author}
     
+    def form_valid(self, form):
+        author = ProfileModel.Profile.objects.get(
+            user=self.request.user
+        )
+        form.instance.author = author
+        return super().form_valid(form)
+
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         author = ProfileModel.Profile.objects.get(user=self.request.user)
@@ -98,3 +110,12 @@ class ThreadUpdateView(LoginRequiredMixin, UpdateView):
     model = Thread
     form_class = ThreadForm
     template_name = "forum-update.html"
+
+    def get_success_url(self):
+        return reverse_lazy('forum:thread-detail', kwargs={
+            'pk': self.object.pk
+        })
+    
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
