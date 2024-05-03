@@ -1,7 +1,51 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h2>{{ article.title }}</h2>
+    <a href="{% url 'wiki:article-list' %}"><p>< Go Back to Articles </p></a>
+
+    {% if article.header_image %}
+        <img src="{{ article.header_image.url }}">
+    {% endif %}
+
+    <h1>{{ article.title }} | {{ article.article_category }} </h1>
+    <h3>Author: {{ article.author }}</h3>
     <p>{{ article.entry }}</p>
     <p>Created on: {{ article.created_on }} | Updated On: {{ article.updated_on }}</p>
-{% endblock content %}
+
+    {% if request.user.is_authenticated %}
+        {% if viewer == article.author %}
+            <a href="{% url 'wiki:article-update' pk=view.kwargs.pk %}"><button>Update Article</button></a>
+            <br>
+        {% endif %}
+    {% endif %}
+    <br>
+
+    <h2>Comments</h2>
+    {% for comment in article.article_comments.all  %}
+            <h4>{{ comment.author }}</h4>
+            <p>{{ comment.entry }}</p>
+            <p>Created On: {{ comment.created_on }} | Updated On: {{ comment.updated_on }}</p>
+            <hr>
+    {% endfor %}
+
+    {% if request.user.is_authenticated %}
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_div }}
+            <button type="submit">Submit</button>
+        </form>
+    {% endif %}
+
+    <br>
+
+    <h4>Related Articles in {{ article.article_category }}</h4>
+    <ul>
+        {% for article in articles_by_author %}
+            {% if forloop.counter0 <= 2 %}
+                {% if article.pk != object.pk %}
+                    <li><a href="{{ article.get_absolute_url }}">{{ article.title }}</a></li>
+                {% endif %}
+            {% endif %}
+        {% endfor %} 
+    </ul>
+{% endblock %}

@@ -27,21 +27,38 @@ class ArticleDetailView(DetailView):
 	model = Article
 	template_name = "wiki-detail.html"
 
+	def get_context_data(self, **kwargs):
+		ctx = super().get_context_data(**kwargs)
+		if self.object:
+			article = self.get_object()
+			articles_by_author = Article.objects.filter(article_category=article.article_category)
+			ctx['articles_by_author'] = articles_by_author
+			if self.request.user.is_authenticated:
+				author = ProfileModel.Profile.objects.get(user=self.request.user)
+				ctx['viewer'] = author
+				ctx['form'] = CommentForm(
+				initial={
+                        'author':author, 
+                        'article':Article.objects.get(pk=article.pk)
+                    }
+                )
+		return ctx
+
 	def post(self, request, *args, **kwargs):
 		self.object = self.get_object()
 		author = ProfileModel.Profile.objects.get(user=self.request.user)
-		thread = self.get_object()
+		article  = self.get_object()
 		form = CommentForm(request.POST,initial={
                     'author':author, 
-                    'article':Article.objects.get(pk=thread.pk)
+                    'article':Article.objects.get(pk=article.pk)
                 }
             )
 		if form.is_valid():
 			comment = form.save(commit=False)
 			comment.author = author
-			comment.post = thread
+			comment.post = article
 			comment.save()
-			return redirect('forum:thread-detail', pk=self.object.pk)
+			return redirect('wiki:article-detail', pk=self.object.pk)
 		ctx = self.get_context_data(**kwargs)
 		return self.render_to_response(ctx)
         
@@ -58,7 +75,7 @@ class ArticleCreateView(LoginRequiredMixin, CreateView):
 	template_name = "wiki-create.html"
 
 	def get_success_url(self):
-		return reverse_lazy('forum:thread-detail', kwargs={
+		return reverse_lazy('wiki:article-detail', kwargs={
             'pk': self.object.pk
         })
     
@@ -80,10 +97,10 @@ class ArticleCreateView(LoginRequiredMixin, CreateView):
 class ArticleUpdateView(LoginRequiredMixin, UpdateView):
 	model = Article
 	form_class = ArticleForm
-	template_name = "wiki-create.html"
+	template_name = "wiki-update.html"
 
 	def get_success_url(self):
-		return reverse_lazy('forum:thread-detail', kwargs={
+		return reverse_lazy('wiki:article-detail', kwargs={
             'pk': self.object.pk
         })
     
