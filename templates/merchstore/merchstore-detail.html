@@ -12,6 +12,8 @@
         <li>Description: {{ product.description }}</li>
         <li>Stock: {{ product.stock }}</li>
         <li>Seller: {{ product.owner }}</li>
+        <li>Availability: {{ product.status }}</li>
+
     </ul>
 
     {% if request.user == product.owner.user %}

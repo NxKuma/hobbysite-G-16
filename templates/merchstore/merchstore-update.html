@@ -4,12 +4,10 @@
 
 {% block content %}
 <h1>Merchandise Store</h1>
-{% for product_type in object_list %}
-    <h2>{{ product_type.name }}</h2>
-    <ul>
-        {% for product in product_type.products.all %}    
-            <li><h3><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h3></li>
-        {% endfor %}
-    </ul>
-{% endfor %}
+    <h1>Update Product</h1>
+    <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Update Product</button>
+    </form>
 {% endblock content %}
