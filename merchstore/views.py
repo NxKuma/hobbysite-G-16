@@ -3,7 +3,8 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy
+from django.urls import reverse
+from django.contrib import messages
 
 from .models import Product, ProductType, Transaction
 from .forms import ProductForm, TransactionForm
@@ -29,10 +30,47 @@ class ProductDetailView(DetailView):
     def get_current_user(self):
         user = ProfileModel.Profile.objects.get(user=self.request.user)
         return user
+    
+    def dispatch(self, request, *args, **kwargs):
+        product = self.get_object()
+        transaction_data = request.session.get('transaction_data')
+        if transaction_data:
+            user = self.get_current_user()
+            # Extract product and amount from session data
+            amount = transaction_data['amount']
+            status = transaction_data['status']
+
+            # Check if transaction already exists (optional)
+            existing_transaction = Transaction.objects.filter(
+                product=product,
+                amount=amount,
+                status=status,
+                buyer=None  # Filter for uncompleted transactions
+            ).first()
+
+            if existing_transaction:
+                # Complete the existing transaction
+                existing_transaction.buyer = user
+                existing_transaction.save()
+            else:
+                # Create a new transaction
+                transaction = Transaction.objects.create(
+                    product=product,
+                    amount=amount,
+                    status=status,
+                    buyer=user,
+                )
+                product.stock -= transaction.amount
+                transaction.save()
+                product.save()
+                del request.session['transaction_data']
+                return redirect('merchstore:cart')
+        return super().dispatch(request, *args, **kwargs)
+
 
     def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
         product = self.get_object()
+        ctx = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
             buyer = self.get_current_user() 
             transaction_form = TransactionForm(initial={'product': product, 'buyer':buyer})
@@ -40,19 +78,28 @@ class ProductDetailView(DetailView):
         transaction_form = TransactionForm(initial={'product': product})
         ctx['transaction_form'] = transaction_form
         return ctx
-    
+
     def post(self, request, *args, **kwargs):
         product = self.get_object()
-        buyer = self.get_current_user()
         transaction_form = TransactionForm(request.POST)
         if transaction_form.is_valid():
             transaction = transaction_form.save(commit=False)
             transaction.product = product
-            transaction.buyer = buyer
             product.stock -= transaction.amount
-            transaction.save()
-            product.save()
-            return redirect('merchstore:cart')
+            if request.user.is_authenticated:
+                buyer = self.get_current_user()
+                transaction.buyer = buyer
+                transaction.save()
+                product.save()
+                return redirect('merchstore:cart')
+            else:
+                # Store transaction details in session
+                request.session['transaction_data'] = {
+                    'amount': transaction.amount,
+                    'status': transaction.status,
+                }   
+                login_url = reverse('login') + '?next=' + request.get_full_path()
+                return redirect(login_url)
         ctx = self.get_context_data(object=product, transaction_form=transaction_form)
         return self.render_to_response(ctx)
 
@@ -77,7 +124,7 @@ class ProductUpdateView(UpdateView):
     template_name = 'merchstore-update.html'
 
 
-class CartView(ListView):
+class CartView(LoginRequiredMixin, ListView):
     model = Transaction
     template_name = 'merchstore-cart.html'
 
