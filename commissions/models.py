@@ -33,29 +33,38 @@ class Job(models.Model):
     commission = models.ForeignKey(
         'Commission',
         on_delete=models.CASCADE,
-        related_name='job'
+        related_name='jobs'
     )
     role = models.CharField(max_length=255)
     manpower_required = models.IntegerField()
+    ongoing_manpower = models.IntegerField(default=0)
     status = models.CharField(max_length=4, choices=(('open','open'), ('full','full'),), default='open')
-    
+
+    def __str__(self):
+        return self.role
+
     def get_absolute_url(self):
         return reverse('commissions:job', args=[self.pk])
+
+    def update_ongoing_manpower(self):
+        accepted = self.applicants.filter(status='accepted').count()
+        self.ongiong_manpower = accepted
+        self.save()
 
     class Meta:
         ordering = ['status', '-manpower_required', 'role']
 
 
-class JobApplication:
+class JobApplication(models.Model):
     job = models.ForeignKey(
         'Job',
         on_delete=models.CASCADE,
-        related_name='applicant'
+        related_name='applicants'
     )
     applicant = models.ForeignKey(
         user_management_models.Profile,
         on_delete=models.CASCADE,
-        related_name='job'
+        related_name='job_applications'
     )
     status = models.CharField(max_length=8, choices=(('pending','pending'), ('accepted','accepted'),
         ('rejected','rejected'),), default='pending')

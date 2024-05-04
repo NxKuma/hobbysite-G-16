@@ -1,6 +1,12 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
+    <form action="{% url 'logout' %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Logout</button>
+    </form>
+
     {% if request.user.is_authenticated %}
         <h2>Created Commissions</h2>
         <ul>
@@ -10,8 +16,8 @@
         </ul>
         <h2>Applied Commissions</h2>
         <ul>
-            {% for commission in applied_by_user %}
-                <li><a href="{{ commission.get_absolute_url }}">{{ commission.title }}</a></li>
+            {% for application in applied_by_user %}
+                <li><a href="{{ application.job.commission.get_absolute_url }}">{{ application.job.commission.title }} | Role: {{ application.job.role }}</a></li>
             {% endfor %}
         </ul>
     {% endif %}
