@@ -3,12 +3,23 @@
 {% block title %}Merchandise Store{% endblock title %}
 
 {% block content %}
-    <h1>Your Cart</h1>
-    {% for transaction in object_list %}
-        <h2>Product: {{ transaction.product.name }}</h2>
-        <li>Buyer: {{ transaction.buyer.display_name }}</li>
-        <li>Amount: {{ transaction.amount }}</li>
-        <li>Status: {{ transaction.status }}</li>
-        <li>Created on: {{ transaction.created_on }}</li>
+    <h1>Your Transactions</h1>
+
+    {% for buyer in list_of_buyers %}        
+        {% if buyer.user.username != request.user.username %}
+            <h2>{{ buyer.display_name }}</h3>
+        {% endif %}
+        {% for transaction in transactions_of_seller %}
+            {% if buyer.user.username == transaction.buyer.user.username %}
+                <li>Product: {{ transaction.product.name }}</li>
+                <ul>
+                    <p>
+                        Amount: {{ transaction.amount }} <br>
+                        Status: {{ transaction.status }} <br>
+                        Created on: {{ transaction.created_on }}
+                    </p>
+                </ul>
+            {% endif %}
+        {% endfor %}
     {% endfor %}
 {% endblock content %}

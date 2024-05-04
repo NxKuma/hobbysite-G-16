@@ -151,6 +151,17 @@ class CartView(LoginRequiredMixin, ListView):
         return ctx
 
 
-class TransactionsListView(ListView):
+class TransactionsListView(LoginRequiredMixin, ListView):
     model = Transaction
     template_name = 'merchstore-transactions.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        user = ProfileModel.Profile.objects.get(user=self.request.user)
+
+        products_by_seller = Product.objects.filter(owner=user)
+        transactions_of_seller = Transaction.objects.filter(product__in=products_by_seller)
+        list_of_buyers = ProfileModel.Profile.objects.all()
+        ctx['transactions_of_seller'] = transactions_of_seller
+        ctx['list_of_buyers'] = list_of_buyers
+        return ctx
