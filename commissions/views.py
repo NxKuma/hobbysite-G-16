@@ -1,5 +1,6 @@
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView, UpdateView
 from django.shortcuts import redirect
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -75,4 +76,10 @@ class CommissionDetailView(DetailView):
 		ctx = self.get_context_data(**kwargs)
 		return self.render_to_response(ctx)
 		
-		
+class CommissionCreateView(LoginRequiredMixin, CreateView):
+	model = Commission
+	template_name = "commission-create.html"
+
+class CommissionUpdateView(LoginRequiredMixin, UpdateView):
+	model = Commission
+	template_name = "commission-update.html"
