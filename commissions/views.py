@@ -4,9 +4,10 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.shortcuts import redirect
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import Commission, Job, JobApplication
-from .forms import JobApplicationForm
+from .forms import JobApplicationForm, CommissionForm
 from user_management import models as profileModel
 
 
@@ -78,8 +79,10 @@ class CommissionDetailView(DetailView):
 		
 class CommissionCreateView(LoginRequiredMixin, CreateView):
 	model = Commission
+	form_class = CommissionForm
 	template_name = "commission-create.html"
 
 class CommissionUpdateView(LoginRequiredMixin, UpdateView):
 	model = Commission
+	form_class = CommissionForm
 	template_name = "commission-update.html"

@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import CommissionListView, CommissionDetailView, CommissionCreateView
+from .views import CommissionListView, CommissionDetailView, CommissionCreateView, CommissionUpdateView
 
 urlpatterns = [
 	path('list', CommissionListView.as_view(), name='commission'),

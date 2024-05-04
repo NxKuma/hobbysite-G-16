@@ -13,10 +13,9 @@
     {% if request.user.is_authenticated %}
         <p>You can apply to a job as {{ display_name_of_user }}</p>
         {% if request.user == commission.author.user %}
-            <a href="{% url 'ledger:recipe-add-image' pk=recipe.pk %}">Add images</a>
+            <a href="{% url 'commissions:commission-update' pk=commission.pk %}">Update Commission</a>
         {% endif %}
     {% endif %}
-
 
     <h3>Job List</h3>
         {% for job in jobs_in_commission %}
