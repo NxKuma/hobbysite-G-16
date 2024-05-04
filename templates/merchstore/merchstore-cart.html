@@ -4,11 +4,24 @@
 
 {% block content %}
     <h1>Your Cart</h1>
-    {% for transaction in object_list %}
-        <h2>Product: {{ transaction.product.name }}</h2>
-        <li>Buyer: {{ transaction.buyer.display_name }}</li>
-        <li>Amount: {{ transaction.amount }}</li>
-        <li>Status: {{ transaction.status }}</li>
-        <li>Created on: {{ transaction.created_on }}</li>
+
+
+    {% for seller in list_of_sellers %}
+        {% if seller.user.username != request.user.username %}
+            <h2>{{ seller.display_name }}</h3>
+        {% endif %}
+        {% for transaction in transactions_by_buyer %}
+            {% if seller.user.username == transaction.product.owner.user.username %}
+                <li>Product: {{ transaction.product.name }}</li>
+                <ul>
+                    <p>
+                        Buyer: {{ transaction.buyer.display_name }} <br>
+                        Amount: {{ transaction.amount }} <br>
+                        Status: {{ transaction.status }} <br>
+                        Created on: {{ transaction.created_on }}
+                    </p>
+                </ul>
+            {% endif %}
+        {% endfor %}
     {% endfor %}
 {% endblock content %}
