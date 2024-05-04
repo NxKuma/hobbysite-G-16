@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %} {{ name }} {% endblock %}
+{% block content %}
+    <p>
+        <p><a href="{% url 'merchstore:product-list' %}">Merchstore</a> | <a href="{% url 'commissions:commission' %}">Commission</a> | <a href="{% url 'blog:article-list' %}">Blog</a> | <a href="{% url 'wiki:article-list' %}">Wiki</a> | <a href="{% url 'forum:thread-list' %}">Forum</a></p>
+    </p>    
+
+    <p>Grabe</p>
+
+{% endblock %}
