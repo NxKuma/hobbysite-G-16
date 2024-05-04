@@ -18,8 +18,8 @@ class ProductListView(ListView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
-            owner = ProfileModel.Profile.objects.get(user=self.request.user)
-            products_by_owner = Product.objects.filter(owner=owner)
+            user = ProfileModel.Profile.objects.get(user=self.request.user)
+            products_by_owner = Product.objects.filter(owner=user)
             ctx['products_by_owner'] = products_by_owner
         return ctx
 
@@ -86,6 +86,8 @@ class ProductDetailView(DetailView):
             transaction = transaction_form.save(commit=False)
             transaction.product = product
             product.stock -= transaction.amount
+            if product.stock <= 0:
+                product.status = product.States.OUT_OF_STOCK
             if request.user.is_authenticated:
                 buyer = self.get_current_user()
                 transaction.buyer = buyer
@@ -124,19 +126,29 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
     form_class = ProductForm
     template_name = 'merchstore-update.html'
 
-    def get_context_data(self, **kwargs):
-        product = self.get_object()
-        ctx = super().get_context_data(**kwargs)
-        transaction_form = TransactionForm(initial={'product': product, 'buyer':buyer})
-        product_form = ProductForm(ini)
-        transaction_form = TransactionForm(initial={'product': product})
-        ctx['transaction_form'] = transaction_form
-        return ctx
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class=form_class)
+        return form
 
+    def form_valid(self, form):
+        form.save()
+        product = self.object
+        product.status = "Out of Stock" if product.stock == 0 else "Available"
+        product.save()
+        return super().form_valid(form)
 
 class CartView(LoginRequiredMixin, ListView):
     model = Transaction
     template_name = 'merchstore-cart.html'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        user = ProfileModel.Profile.objects.get(user=self.request.user)
+        transactions_by_buyer = Transaction.objects.filter(buyer=user)
+        list_of_sellers = ProfileModel.Profile.objects.all()
+        ctx['transactions_by_buyer'] = transactions_by_buyer
+        ctx['list_of_sellers'] = list_of_sellers
+        return ctx
 
 
 class TransactionsListView(ListView):
