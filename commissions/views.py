@@ -10,6 +10,8 @@ from .models import Commission, Job, JobApplication
 from .forms import JobApplicationForm, CommissionForm
 from user_management import models as profileModel
 
+from operator import attrgetter
+
 
 class CommissionListView(ListView):
 	model = Commission
@@ -20,7 +22,16 @@ class CommissionListView(ListView):
 		if self.request.user.is_authenticated:
 			user = profileModel.Profile.objects.get(user=self.request.user)
 			commission_by_user = Commission.objects.filter(author=user)
-			applied_by_user = JobApplication.objects.filter(applicant=user)
+
+			job_applications = JobApplication.objects.filter(applicant=user)
+			applied_by_user = []
+			for application in job_applications:
+				job = application.job
+				commission = job.commission
+				if commission not in applied_by_user:
+					applied_by_user.append(commission)
+			applied_by_user.sort(key=attrgetter('created_on'))
+
 			ctx['commission_by_user'] = commission_by_user
 			ctx['applied_by_user'] = applied_by_user
 		return ctx
