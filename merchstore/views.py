@@ -119,9 +119,19 @@ class ProductCreateView(LoginRequiredMixin, CreateView):
         return ctx
 
 
-class ProductUpdateView(UpdateView):
+class ProductUpdateView(LoginRequiredMixin, UpdateView):
     model = Product
+    form_class = ProductForm
     template_name = 'merchstore-update.html'
+
+    def get_context_data(self, **kwargs):
+        product = self.get_object()
+        ctx = super().get_context_data(**kwargs)
+        transaction_form = TransactionForm(initial={'product': product, 'buyer':buyer})
+        product_form = ProductForm(ini)
+        transaction_form = TransactionForm(initial={'product': product})
+        ctx['transaction_form'] = transaction_form
+        return ctx
 
 
 class CartView(LoginRequiredMixin, ListView):
