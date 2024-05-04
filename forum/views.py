@@ -19,7 +19,9 @@ class ThreadListView(ListView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         if self.request.user.is_authenticated:
-            author = ProfileModel.Profile.objects.get(user=self.request.user)
+            author = ProfileModel.Profile.objects.get(
+                user=self.request.user
+            )
             threads_by_author = Thread.objects.filter(author=author)
             ctx['threads_by_author'] = threads_by_author
         return ctx
@@ -33,10 +35,14 @@ class ThreadDetailView(DetailView):
         ctx = super().get_context_data(**kwargs)
         if self.object:
             thread = self.get_object()
-            threads_in_category = Thread.objects.filter(category=thread.category)
+            threads_in_category = Thread.objects.filter(
+                category=thread.category
+            )
             ctx['threads_in_category'] = threads_in_category
             if self.request.user.is_authenticated:
-                author = ProfileModel.Profile.objects.get(user=self.request.user)
+                author = ProfileModel.Profile.objects.get(
+                    user=self.request.user
+                )
                 ctx['viewer'] = author
                 ctx['form'] = CommentForm(
                 initial={
@@ -48,8 +54,10 @@ class ThreadDetailView(DetailView):
     
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
-        author = ProfileModel.Profile.objects.get(user=self.request.user)
-        thread = self.get_object()  # Get object if needed for context
+        author = ProfileModel.Profile.objects.get(
+            user=self.request.user
+        )
+        thread = self.get_object() 
         form = CommentForm(request.POST,initial={
                     'author':author, 
                     'thread':Thread.objects.get(pk=thread.pk)
@@ -64,9 +72,10 @@ class ThreadDetailView(DetailView):
         ctx = self.get_context_data(**kwargs)
         return self.render_to_response(ctx)
         
-    
     def form_valid(self, form):
-        author = ProfileModel.Profile.objects.get(user=self.request.user)
+        author = ProfileModel.Profile.objects.get(
+            user=self.request.user
+        )
         form.instance.author = author
         return super().form_valid(form)
 
@@ -76,7 +85,6 @@ class ThreadCreateView(LoginRequiredMixin, CreateView):
     form_class = ThreadForm
     template_name = "forum-create.html"
 
-    
     def get_success_url(self):
         return reverse_lazy('forum:thread-detail', kwargs={
             'pk': self.object.pk
@@ -97,7 +105,9 @@ class ThreadCreateView(LoginRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        author = ProfileModel.Profile.objects.get(user=self.request.user)
+        author = ProfileModel.Profile.objects.get(
+            user=self.request.user
+        )
         ctx['form'] = ThreadForm(
             initial={
                 'author':author,
