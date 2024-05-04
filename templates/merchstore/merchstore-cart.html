@@ -5,7 +5,6 @@
 {% block content %}
     <h1>Your Cart</h1>
 
-
     {% for seller in list_of_sellers %}
         {% if seller.user.username != request.user.username %}
             <h2>{{ seller.display_name }}</h3>
