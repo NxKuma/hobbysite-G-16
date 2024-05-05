@@ -23,6 +23,7 @@ class ProductListView(ListView):
             ctx['products_by_owner'] = products_by_owner
         return ctx
 
+
 class ProductDetailView(DetailView):
     model = Product
     template_name = 'merchstore-detail.html'
@@ -67,7 +68,6 @@ class ProductDetailView(DetailView):
                 return redirect('merchstore:cart')
         return super().dispatch(request, *args, **kwargs)
 
-
     def get_context_data(self, **kwargs):
         product = self.get_object()
         ctx = super().get_context_data(**kwargs)
@@ -105,20 +105,25 @@ class ProductDetailView(DetailView):
         ctx = self.get_context_data(object=product, transaction_form=transaction_form)
         return self.render_to_response(ctx)
 
+
 class ProductCreateView(LoginRequiredMixin, CreateView):
     model = Product
     form_class = ProductForm
     template_name = 'merchstore-create.html'
 
-    def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
-        owner = ProfileModel.Profile.objects.get(user=self.request.user)
-        ctx['form'] = ProductForm(
-            initial = {
-                'owner': owner,
-            }
-        )
-        return ctx
+    def get_current_user(self):
+        user = ProfileModel.Profile.objects.get(user=self.request.user)
+        return user
+    
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class=form_class)
+        form.fields['owner'].initial = self.get_current_user()
+        form.fields['owner'].disabled = True
+        return form
+
+    def form_valid(self, form):
+        form.save()
+        return redirect('merchstore:product-list')
 
 
 class ProductUpdateView(LoginRequiredMixin, UpdateView):
@@ -136,6 +141,7 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
         product.status = "Out of Stock" if product.stock == 0 else "Available"
         product.save()
         return super().form_valid(form)
+
 
 class CartView(LoginRequiredMixin, ListView):
     model = Transaction
