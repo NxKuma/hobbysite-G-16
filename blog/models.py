@@ -21,22 +21,22 @@ class ArticleCategory(models.Model):
 
 class Article(models.Model):
     title = models.CharField(max_length=255)
-    article_author = models.ForeignKey(
+    author = models.ForeignKey(
         profile_models.Profile,
-        on_delete = models.SET_NULL,
-        related_name = 'authors',
-        null = True
+        on_delete=models.SET_NULL,
+        related_name='articles',  
+        null=True
     )
-    article_category = models.ForeignKey(
+    category = models.ForeignKey(
         'ArticleCategory',
-        on_delete = models.SET_NULL,
-        related_name = 'article_category',
-        null = True
+        on_delete=models.SET_NULL,
+        related_name='articles',  
+        null=True
     )
     entry = models.TextField()
-    image = models.ImageField(upload_to = 'images/')
-    created_on = models.DateTimeField(auto_now_add = True)
-    updated_on = models.DateTimeField(auto_now = True)
+    image = models.ImageField(upload_to='images/', null=True, blank=True)
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_on = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.title
@@ -47,21 +47,21 @@ class Article(models.Model):
     class Meta:
         ordering = ['-created_on',]
 
-class Article_Comment(models.Model):
-    article_author = models.ForeignKey(
+class Comment(models.Model):
+    author = models.ForeignKey(
         profile_models.Profile,
-        on_delete = models.SET_NULL,
-        related_name = 'authors',
-        null = True
+        on_delete=models.SET_NULL,
+        related_name='comment_authors', 
+        null=True
     )
-    thread = models.ForeignKey(
-        'article',
+    article = models.ForeignKey(
+        Article, 
         on_delete=models.CASCADE,
-        related_name='articles'
+        related_name='comments',  
     )
     entry = models.TextField()
-    created_on = models.DateTimeField(auto_now_add = True) 
-    updated_on = models.DateTimeField(auto_now = True)
-        
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_on = models.DateTimeField(auto_now=True)
+
     class Meta:
-        ordering = ['created_on',]
+        ordering = ['-created_on',]
