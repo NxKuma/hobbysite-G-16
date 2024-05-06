@@ -1,13 +1,39 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
+
+{% block title %} 
+{{ name }} 
+{% endblock %}
 
 {% block content %}
+    <p>Hello {{ user.username }}!</p>
     <h1>Blog</h1>
-    <ul>
-        {% for article_category in object_list %}
-            <h2>{{article_category.name}}</h2>
-            {% for article in article_category.article.all %}
-                <li><a href="{{ article.get_absolute_url }}">{{article.title}}</a></li>
-            {% endfor %}
-        {% endfor %}
-    </ul>
-{% endblock content %}
+
+    {% if request.user.is_authenticated %}
+        <h1>My Articles</h1>
+            <ul>
+                {% for article in articles_by_author %}
+                    <li><a href="{{ article.get_absolute_url }}">{{ article.title }}</a></li>
+                {% endfor %} 
+            </ul>
+        <a href="{% url 'blog:article-create' %}"><button>Create Article</button></a>
+    {% endif %}
+
+    <h1>All articles</h1>
+    {% for article_category in object_list %}
+        <h2>{{article_category.name}}</h2>
+        <h3>{{article_category.description}}</h3>
+        <ul>
+            {% if request.user.is_authenticated %}
+                {% for article in article_category.articles.all %}
+                    {% if article not in articles_by_author %}
+                        <li><a href="{{ article.get_absolute_url }}">{{ article.title }}</a></li>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                {% for article in article_category.articles.all %}
+                    <li><a href="{{ article.get_absolute_url }}">{{ article.title }} </a></li>
+                {% endfor %}
+            {% endif %}
+        </ul>
+    {% endfor %} 
+{% endblock %}
