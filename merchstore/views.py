@@ -4,7 +4,6 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
-from django.contrib import messages
 
 from .models import Product, ProductType, Transaction
 from .forms import ProductForm, TransactionForm
@@ -17,6 +16,8 @@ class ProductListView(ListView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
+        if self.request.session.get('transaction_data'):
+            del self.request.session['transaction_data']
         if self.request.user.is_authenticated:
             user = ProfileModel.Profile.objects.get(user=self.request.user)
             products_by_owner = Product.objects.filter(owner=user)
@@ -31,41 +32,27 @@ class ProductDetailView(DetailView):
     def get_current_user(self):
         user = ProfileModel.Profile.objects.get(user=self.request.user)
         return user
-    
+
     def dispatch(self, request, *args, **kwargs):
         product = self.get_object()
         transaction_data = request.session.get('transaction_data')
+
         if transaction_data:
-            user = self.get_current_user()
-            # Extract product and amount from session data
-            amount = transaction_data['amount']
-            status = transaction_data['status']
-
-            # Check if transaction already exists (optional)
-            existing_transaction = Transaction.objects.filter(
-                product=product,
-                amount=amount,
-                status=status,
-                buyer=None  # Filter for uncompleted transactions
-            ).first()
-
-            if existing_transaction:
-                # Complete the existing transaction
-                existing_transaction.buyer = user
-                existing_transaction.save()
-            else:
-                # Create a new transaction
-                transaction = Transaction.objects.create(
-                    product=product,
-                    amount=amount,
-                    status=status,
-                    buyer=user,
-                )
-                product.stock -= transaction.amount
-                transaction.save()
-                product.save()
+            if product.owner.user == self.request.user:
                 del request.session['transaction_data']
-                return redirect('merchstore:cart')
+                return redirect('merchstore:product-list')
+            
+            buyer = self.get_current_user()
+            amount = transaction_data['amount']
+
+            transaction_form = TransactionForm()
+            transaction = transaction_form.save(commit=False)
+            new_transaction = self.set_transaction(transaction, product, amount, buyer)
+            new_transaction.save()
+            product.save()
+
+            del request.session['transaction_data']
+            return redirect('merchstore:cart')
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -75,6 +62,10 @@ class ProductDetailView(DetailView):
             buyer = self.get_current_user() 
             transaction_form = TransactionForm(initial={'product': product, 'buyer':buyer})
             ctx['buyer'] = buyer
+        
+        if 'error' in kwargs.keys():
+            ctx['error'] = 'You dum dum.'
+            
         transaction_form = TransactionForm(initial={'product': product})
         ctx['transaction_form'] = transaction_form
         return ctx
@@ -84,61 +75,51 @@ class ProductDetailView(DetailView):
         transaction_form = TransactionForm(request.POST)
         if transaction_form.is_valid():
             transaction = transaction_form.save(commit=False)
-            transaction.product = product
-            product.stock -= transaction.amount
-            if product.stock <= 0:
-                product.status = product.States.OUT_OF_STOCK
+            amount = transaction.amount
             if request.user.is_authenticated:
                 buyer = self.get_current_user()
-                transaction.buyer = buyer
-                transaction.save()
+                new_tansaction = self.set_transaction(transaction, product, amount, buyer)
+                new_tansaction.save()
                 product.save()
                 return redirect('merchstore:cart')
             else:
-                # Store transaction details in session
                 request.session['transaction_data'] = {
                     'amount': transaction.amount,
-                    'status': transaction.status,
                 }   
                 login_url = reverse('login') + '?next=' + request.get_full_path()
                 return redirect(login_url)
-        ctx = self.get_context_data(object=product, transaction_form=transaction_form)
-        return self.render_to_response(ctx)
+    
+    def set_transaction(self, transaction, product, amount, user):
+        transaction.product = product
+        transaction.status = 'On cart'
+        transaction.buyer = user
+        transaction.amount = amount
+        product.stock -= transaction.amount
+        if product.stock <= 0:
+            product.status = 'Out of stock'
+        return transaction
 
 
 class ProductCreateView(LoginRequiredMixin, CreateView):
     model = Product
     form_class = ProductForm
     template_name = 'merchstore-create.html'
-
-    def get_current_user(self):
-        user = ProfileModel.Profile.objects.get(user=self.request.user)
-        return user
     
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class=form_class)
-        form.fields['owner'].initial = self.get_current_user()
-        form.fields['owner'].disabled = True
+    def get_form(self):
+        form = super().get_form(form_class=ProductForm)
+        form.fields['owner'].initial = ProfileModel.Profile.objects.get(user=self.request.user)
         return form
-
-    def form_valid(self, form):
-        form.save()
-        return redirect('merchstore:product-list')
-
+    
 
 class ProductUpdateView(LoginRequiredMixin, UpdateView):
     model = Product
     form_class = ProductForm
     template_name = 'merchstore-update.html'
 
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class=form_class)
-        return form
-
     def form_valid(self, form):
         form.save()
         product = self.object
-        product.status = "Out of Stock" if product.stock == 0 else "Available"
+        product.status = "Out of Stock" if product.stock == 0 else product.status
         product.save()
         return super().form_valid(form)
 
@@ -164,7 +145,6 @@ class TransactionsListView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         user = ProfileModel.Profile.objects.get(user=self.request.user)
-
         products_by_seller = Product.objects.filter(owner=user)
         transactions_of_seller = Transaction.objects.filter(product__in=products_by_seller)
         list_of_buyers = ProfileModel.Profile.objects.all()
