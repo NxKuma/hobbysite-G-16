@@ -2,33 +2,29 @@
 
 {% block content %}
     <form method="POST">
+        <h3>Commission Creation</h3>
         {% csrf_token %}
         {{ commission_form }}
-        
+        <h3>Job Creation</h3>
         <div id="jobFormsContainer">
             <div class="jobFormTemplate">
                 {{ job_form }}
             </div>
         </div>
         <button id="addJobButton" type="button">Add Job</button>
-        <button type="submit">Apply</button>
+        <br> <br>
+        <button type="submit">Create!</button>
+
         <script>
             document.getElementById("addJobButton").addEventListener("click", function() {
-                // Clone the job form template
                 var jobFormTemplate = document.querySelector('.jobFormTemplate').cloneNode(true);
-                
-                // Remove the 'jobFormTemplate' class from the cloned form
                 jobFormTemplate.classList.remove('jobFormTemplate');
-                
-                // Append the cloned job form to the container
+                jobFormTemplate.querySelectorAll('input[type="text"]').forEach(function(input) {
+                    input.value = "";
+                });
                 document.getElementById("jobFormsContainer").appendChild(jobFormTemplate);
-                
-            // Show the cloned job form
-            jobFormTemplate.style.display = "block";
+                jobFormTemplate.style.display = "block";
         });
         </script>
     </form>
-    
-
-
 {% endblock content %}
