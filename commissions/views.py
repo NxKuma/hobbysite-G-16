@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import Commission, Job, JobApplication
-from .forms import JobApplicationForm, CommissionForm
+from .forms import JobApplicationForm, CommissionForm, JobForm
 from user_management import models as profileModel
 
 from operator import attrgetter
@@ -83,15 +83,58 @@ class CommissionDetailView(DetailView):
 
 			return HttpResponseRedirect(reverse('commissions:commission-detail', kwargs={'pk': commission.pk}))
 		else:
-			print(form.errors)
+			print(self.errors)
 
 		ctx = self.get_context_data(**kwargs)
 		return self.render_to_response(ctx)
-		
+
+
 class CommissionCreateView(LoginRequiredMixin, CreateView):
 	model = Commission
 	form_class = CommissionForm
 	template_name = "commission-create.html"
+
+	def get_context_data(self, **kwargs):
+		ctx = super().get_context_data(**kwargs)
+		author = profileModel.Profile.objects.get(
+			user=self.request.user
+		)
+		ctx['commission_form'] = CommissionForm(initial={'author':author})
+		ctx['job_form'] = JobForm(initial={'ongoing_manpower':0})
+		return ctx
+
+	def post(self, request, *args, **kwargs):
+
+		post = request.POST
+		title = post['title']
+		author = profileModel.Profile.objects.get(
+			user=self.request.user
+		)
+		description = post['description']
+		status = post['status']
+
+		commission_form = CommissionForm()
+		new_commission = commission_form.save(commit=False)
+		new_commission.title = title
+		new_commission.author = author
+		new_commission.description = description
+		new_commission.status = status
+		new_commission.save()
+
+		temp_post = dict(post)
+		roles = temp_post['role']
+		manpowers = temp_post['manpower_required']
+
+		for index in range(len(roles)):
+			jobform = JobForm()
+			new_job = jobform.save(commit=False)
+			new_job.role = roles[index]
+			new_job.manpower_required = manpowers[index]
+			new_job.commission = new_commission
+			new_job.save()
+
+		return redirect('commissions:commission-detail', pk=new_commission.id)
+
 
 class CommissionUpdateView(LoginRequiredMixin, UpdateView):
 	model = Commission
