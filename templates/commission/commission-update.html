@@ -1,4 +1,22 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <form method="POST" enctype="multipart/form-data">
+        <h3>Commission Update</h3>
+        {% csrf_token %}
+        {{ form.as_div }}        
+        {% csrf_token %}
+
+        <h3>Job Update</h3>
+        {% for job in jobs %}
+            <label for="id_job_role_{{ job.pk }}">Role for {{ job.role }}:</label>
+            <input type="text" id="id_job_role_{{ job.pk }}"
+                name="job_role_{{ job.pk }}" value="{{ job.role }}"><br>
+            <label for="id_job_manpower_required_{{ job.pk }}">Manpower Required for {{ job.role }}:</label>
+            <input type="text" id="id_job_manpower_required_{{ job.pk }}"
+                name="job_manpower_required_{{ job.pk }}" value="{{ job.manpower_required }}"><br>
+        {% endfor %}
+
+        <button>Submit</button>
+    </form>
 {% endblock content %}

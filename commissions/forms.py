@@ -12,6 +12,7 @@ class CommissionForm(forms.ModelForm):
         super().__init__(*args,**kwargs)
         self.fields['author'].disabled=True
 
+
 class JobForm(forms.ModelForm):
     class Meta:
         model = Job

@@ -140,3 +140,42 @@ class CommissionUpdateView(LoginRequiredMixin, UpdateView):
 	model = Commission
 	form_class = CommissionForm
 	template_name = "commission-update.html"
+
+	def get_context_data(self, **kwargs):
+		ctx = super().get_context_data(**kwargs)
+		commission = self.get_object()
+		jobs = Job.objects.filter(commission=commission)
+		ctx['jobs'] = jobs
+		ctx['job_application_form'] = JobApplicationForm()
+		return ctx
+
+	def post(self, request, *args, **kwargs):
+		commission = self.get_object()
+		commission_form = CommissionForm(request.POST, instance=commission)
+		if commission_form.is_valid():
+			commission = commission_form.save(commit=False)
+			commission.save()
+
+			temp_post = dict(request.POST)
+			for job in Job.objects.filter(commission=commission):
+				job.role = temp_post['job_role_'+str(job.pk)][0]
+				job.manpower_required = temp_post['job_manpower_required_'+str(job.pk)][0]
+				job.save()
+
+			return redirect('commissions:commission-detail', pk=commission.pk)
+		else:
+			return self.form_invalid(commission_form)
+
+	def get_job_forms(self, post_data):
+		job_forms = []
+		for key, value in post_data.items():
+			if key.startswith('job_role_'):
+				job_pk = int(key.replace('job_role_', ''))
+				job = Job.objects.get(pk=job_pk)
+				job_form = JobForm(post_data, instance=job)
+				job_forms.append(job_form)
+		return job_forms
+
+	def form_invalid(self, form):
+		ctx = self.get_context_data(form=form)
+		return self.render_to_response(ctx)
