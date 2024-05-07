@@ -6,7 +6,7 @@
     <h1>Your Transactions</h1>
 
     {% for buyer in list_of_buyers %}        
-        {% if buyer.user.username != request.user.username %}
+        {% if buyer.user != request.user %}
             <h2>{{ buyer.display_name }}</h3>
         {% endif %}
         {% for transaction in transactions_of_seller %}

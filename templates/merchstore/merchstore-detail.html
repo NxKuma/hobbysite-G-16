@@ -23,6 +23,7 @@
         <form method="post">
             <p>Buyer : {{ buyer }}</p>
             <p>Product : {{ product.name }}</p>
+            <p>{{ error }}</p>
             {% csrf_token %}
             {{ transaction_form.as_p }}  
             {% if product.stock == 0 %}

@@ -10,7 +10,7 @@
             <h2>{{ seller.display_name }}</h3>
         {% endif %}
         {% for transaction in transactions_by_buyer %}
-            {% if seller.user.username == transaction.product.owner.user.username %}
+            {% if seller.user == transaction.product.owner.user %}
                 <li>Product: {{ transaction.product.name }}</li>
                 <ul>
                     <p>
