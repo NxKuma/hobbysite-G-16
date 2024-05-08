@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse 
 from django.views.generic.edit import UpdateView
 from django.views import View
+from django.contrib.auth.forms import UserCreationForm
 
 from .models import Profile
 from merchstore import models as merchmodel
@@ -16,13 +17,16 @@ class ProfileUpdateView(UpdateView):
     template_name = "profile-update.html"
 
 
-class Index(View):
-    template_name = 'index.html'
+def registerPage(request):
+    form = UserCreationForm
+    if request == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
 
-    def get_context_data(self, *kwargs):
-        ctx = super().get_context_data(**kwargs)
-        ctx['merchstore']
-        return ctx
+    ctx = {'form':form}
+    return render(request, 'register.html', ctx)
+
     
 def index(request):
      ctx = {
