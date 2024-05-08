@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth import authenticate, login
 from django.urls import reverse_lazy
 from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import View
 
 
 from .models import Profile
@@ -52,12 +53,10 @@ class RegisterProfileView(CreateView):
     
 def index(request):
      ctx = {
-         "models" :{
-             "merchstore":merchmodel.ProductType,
-             "forum":forummodel.ThreadCategory,
-             "wiki":wikimodel.ArticleCategory,
-             "commission":commodel.Commission,
-             "blog":blogmodel.ArticleCategory,
-         }
+        "merch_list":merchmodel.ProductType.objects.all,
+        "forum_list":forummodel.ThreadCategory.objects.all,
+        "wiki_list":wikimodel.ArticleCategory.objects.all,
+        "com_list":commodel.Commission.objects.all,
+        "blog_list":blogmodel.ArticleCategory.objects.all,
      }
      return render(request, 'index.html', ctx)

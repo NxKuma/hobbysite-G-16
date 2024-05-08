@@ -1,5 +1,102 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    {% if request.user.is_authenticated %}
+        <div>
+            <h1>Merchstore</h1>
+            {% for product_type in merch_list %}
+                <h3>{{product_type}}</h3>
+                {% for products in product_type.products.all %}
+                    <p>{{ products.title }}</p>
+                {% endfor %}
+            {% endfor %}    
+        </div>
+
+        <div>
+            <h1>Commission</h1>
+            {% for commission in com_list %}
+                <h3>{{commission}}</h3>
+
+            {% endfor %}
+        </div>
+
+        <div>
+            <h1>Blog</h1>
+            {% for article_category  in blog_list %}
+                <h3>{{article_category }}</h3>
+                {% for article  in article_category.articles.all %}
+                    <p>{{ article.title }}</p>
+                {% endfor %}
+            {% endfor %}
+        </div>
+
+        <div>
+            <h1>Wiki</h1>
+            {% for article_category in wiki_list %}
+                <h3>{{article_category}}</h3>
+                {% for article in article_category.articles.all %}
+                    <p>{{ article.title }}</p>
+                {% endfor %}
+            {% endfor %}
+        </div>
+
+        <div>
+            <h1>Forum</h1>
+            {% for thread_category in forum_list %}
+                <h3>{{thread_category}}</h3>
+                {% for thread in thread_category.threads.all %}
+                    <p>{{ thread.title }}</p>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    {% else %}
+    <div>
+        <h1>Merchstore</h1>
+        {% for product_type in merch_list %}
+            <h3>{{product_type}}</h3>
+            {% for products in product_type.products.all %}
+                <p>{{ products.title }}</p>
+            {% endfor %}
+        {% endfor %}    
+    </div>
+
+    <div>
+        <h1>Commission</h1>
+        {% for commission in com_list %}
+            <h3>{{commission}}</h3>
+
+        {% endfor %}
+    </div>
+
+    <div>
+        <h1>Blog</h1>
+        {% for article_category  in blog_list %}
+            <h3>{{article_category }}</h3>
+            {% for article  in article_category.articles.all %}
+                <p>{{ article.title }}</p>
+            {% endfor %}
+        {% endfor %}
+    </div>
+
+    <div>
+        <h1>Wiki</h1>
+        {% for article_category in wiki_list %}
+            <h3>{{article_category}}</h3>
+            {% for article in article_category.articles.all %}
+                <p>{{ article.title }}</p>
+            {% endfor %}
+        {% endfor %}
+    </div>
+
+    <div>
+        <h1>Forum</h1>
+        {% for thread_category in forum_list %}
+            <h3>{{thread_category}}</h3>
+            {% for thread in thread_category.threads.all %}
+                <p>{{ thread.title }}</p>
+            {% endfor %}
+        {% endfor %}
+    </div>
+    {% endif %}
 
 {% endblock %}
