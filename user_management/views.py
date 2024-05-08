@@ -20,7 +20,7 @@ class ProfileUpdateView(UpdateView):
     model = Profile
     fields = ['display_name', 'email']
     template_name = "profile-update.html"
-    success_url = reverse_lazy("profile:index")
+    success_url = reverse_lazy("user_management:index")
     
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -49,7 +49,7 @@ class RegisterProfileView(CreateView):
         return response
     
     def get_success_url(self):
-        return reverse_lazy('profile:index')
+        return reverse_lazy('user_management:index')
     
 def index(request):
      ctx = {

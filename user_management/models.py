@@ -13,7 +13,7 @@ class Profile(models.Model):
         return self.display_name
     
     def get_absolute_url(self):
-        return reverse('profile:update', args=[str(self.pk)])
+        return reverse('user_management:profile-update', args=[str(self.pk)])
     
 
 def create_user_profile(sender, instance, created, **kwargs):
