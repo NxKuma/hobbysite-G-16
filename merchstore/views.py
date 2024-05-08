@@ -29,14 +29,27 @@ class ProductDetailView(DetailView):
     model = Product
     template_name = 'merchstore-detail.html'
 
-    def get_current_user(self):
-        user = ProfileModel.Profile.objects.get(user=self.request.user)
-        return user
+    def get_context_data(self, **kwargs):
+        product = self.get_object()
+        self.object = product
+        ctx = super().get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            buyer = self.get_current_user() 
+            transaction_form = TransactionForm(initial={'product': product, 'buyer':buyer})
+            ctx['buyer'] = buyer
+        transaction_form = TransactionForm(initial={'product': product})
+        ctx['transaction_form'] = transaction_form
+
+        if 'error1' in kwargs.keys():
+            ctx['error_msg1'] = 'Amount should not be greater than stock'
+        if 'error2' in kwargs.keys():
+            ctx['error_msg2'] = 'You cannot buy your products'
+
+        return ctx
 
     def dispatch(self, request, *args, **kwargs):
         product = self.get_object()
         transaction_data = request.session.get('transaction_data')
-
         if transaction_data:
             if product.owner.user == self.request.user:
                 del request.session['transaction_data']
@@ -53,51 +66,46 @@ class ProductDetailView(DetailView):
 
             del request.session['transaction_data']
             return redirect('merchstore:cart')
-        return super().dispatch(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        product = self.get_object()
-        ctx = super().get_context_data(**kwargs)
-        if self.request.user.is_authenticated:
-            buyer = self.get_current_user() 
-            transaction_form = TransactionForm(initial={'product': product, 'buyer':buyer})
-            ctx['buyer'] = buyer
-        
-        if 'error' in kwargs.keys():
-            ctx['error'] = 'You dum dum.'
-            
-        transaction_form = TransactionForm(initial={'product': product})
-        ctx['transaction_form'] = transaction_form
-        return ctx
+        else:
+            return super().dispatch(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
+        post = request.POST
         product = self.get_object()
-        transaction_form = TransactionForm(request.POST)
-        if transaction_form.is_valid():
-            transaction = transaction_form.save(commit=False)
-            amount = transaction.amount
-            if request.user.is_authenticated:
-                buyer = self.get_current_user()
-                new_tansaction = self.set_transaction(transaction, product, amount, buyer)
-                new_tansaction.save()
-                product.save()
-                return redirect('merchstore:cart')
-            else:
-                request.session['transaction_data'] = {
-                    'amount': transaction.amount,
-                }   
-                login_url = reverse('login') + '?next=' + request.get_full_path()
-                return redirect(login_url)
+        transaction_form = TransactionForm()
+        transaction = transaction_form.save(commit=False)
+        amount = int(post['amount'])
+        if amount > product.stock:
+            return self.render_to_response(self.get_context_data(object=product, error=1))
+        else:
+            product.stock -= amount
+            if product.stock <= 0:
+                product.status = 'Out of stock'
+        if request.user.is_authenticated:
+            if product.owner.user == request.user:
+                return self.render_to_response(self.get_context_data(object=product, error=2))
+            buyer = self.get_current_user()
+            new_tansaction = self.set_transaction(transaction, product, amount, buyer)
+            new_tansaction.save()
+            product.save()
+            return redirect('merchstore:cart')
+        else:
+            request.session['transaction_data'] = {
+                'amount': amount,
+            }   
+            login_url = reverse('login') + '?next=' + request.get_full_path()
+            return redirect(login_url)
     
     def set_transaction(self, transaction, product, amount, user):
         transaction.product = product
         transaction.status = 'On cart'
         transaction.buyer = user
         transaction.amount = amount
-        product.stock -= transaction.amount
-        if product.stock <= 0:
-            product.status = 'Out of stock'
         return transaction
+    
+    def get_current_user(self):
+        user = ProfileModel.Profile.objects.get(user=self.request.user)
+        return user
 
 
 class ProductCreateView(LoginRequiredMixin, CreateView):
