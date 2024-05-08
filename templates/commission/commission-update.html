@@ -4,19 +4,29 @@
     <form method="POST" enctype="multipart/form-data">
         <h3>Commission Update</h3>
         {% csrf_token %}
-        {{ form.as_div }}        
-        {% csrf_token %}
+        {{ form.as_div|safe }}        
 
         <h3>Job Update</h3>
         {% for job in jobs %}
-            <label for="id_job_role_{{ job.pk }}">Role for {{ job.role }}:</label>
-            <input type="text" id="id_job_role_{{ job.pk }}"
-                name="job_role_{{ job.pk }}" value="{{ job.role }}"><br>
-            <label for="id_job_manpower_required_{{ job.pk }}">Manpower Required for {{ job.role }}:</label>
-            <input type="text" id="id_job_manpower_required_{{ job.pk }}"
-                name="job_manpower_required_{{ job.pk }}" value="{{ job.manpower_required }}"><br>
-        {% endfor %}
+            <label>Role for {{ job.role }}:</label>
+            <input type="text" name="job_role_{{ job.pk }}" value="{{ job.role }}" required><br>
+            <label>Manpower Required for {{ job.role }}:</label>
+            <input type="text" name="job_manpower_required_{{ job.pk }}" value="{{ job.manpower_required }}" required><br>
+            
+            <label>Job Applications for {{ job.role }}:</label> <br> <br>
+            {% for job_application in job_applications %}
+                {% if job_application.job == job %}
+                    {{ job_application.applicant }} 
+                    {% for job_app_form in job_app_forms %}
+                        {% if job_app_form.instance == job_application %}
+                            <span>{{ job_app_form }}</span> <br>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
 
+
+        {% endfor %}
         <button>Submit</button>
     </form>
 {% endblock content %}

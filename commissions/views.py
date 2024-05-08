@@ -5,6 +5,7 @@ from django.shortcuts import redirect
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.forms import formset_factory
 
 from .models import Commission, Job, JobApplication
 from .forms import JobApplicationForm, CommissionForm, JobForm
@@ -49,10 +50,11 @@ class CommissionDetailView(DetailView):
 
 		for job in commission.jobs.all():
 			job.update_ongoing_manpower()
-			total_ongoing_power += job.ongiong_manpower
+			total_ongoing_power += job.ongoing_manpower
 			total_manpower_required += job.manpower_required
 
 		jobs_in_commission = Job.objects.filter(commission=commission)
+
 		ctx['jobs_in_commission'] = jobs_in_commission
 		ctx['total_manpower_required'] = total_manpower_required
 		ctx['open_manpower'] = total_manpower_required - total_ongoing_power
@@ -68,22 +70,17 @@ class CommissionDetailView(DetailView):
 		return ctx
 
 	def post(self, request, *args, **kwargs):
-		
 		commission = self.get_object()
-		job_application_form = JobApplicationForm(request.POST)
-		if job_application_form.is_valid():
-			applicant = profileModel.Profile.objects.get(user=self.request.user)
-			job_pk = request.POST.get('job_pk')
-			job = Job.objects.get(pk=job_pk, commission=commission)
+		job_application_form = JobApplicationForm()
+		job_pk = request.POST.get('job_pk')
+		job = Job.objects.get(pk=job_pk, commission=commission)
+		applicant = profileModel.Profile.objects.get(user=self.request.user)
 
-			existing_application = JobApplication.objects.filter(job=job, applicant=applicant).exists()
-			if not existing_application:
-				job_application_form = JobApplication.objects.create(applicant=applicant, job=job)
-				job_application_form.save()
-
-			return HttpResponseRedirect(reverse('commissions:commission-detail', kwargs={'pk': commission.pk}))
-		else:
-			print(self.errors)
+		existing_application = JobApplication.objects.filter(job=job, applicant=applicant).exists()
+		if not existing_application:
+			job_app = JobApplication.objects.create(applicant=applicant, job=job)
+			
+		return HttpResponseRedirect(reverse('commissions:commission-detail', kwargs={'pk': commission.pk}))
 
 		ctx = self.get_context_data(**kwargs)
 		return self.render_to_response(ctx)
@@ -144,37 +141,47 @@ class CommissionUpdateView(LoginRequiredMixin, UpdateView):
 	def get_context_data(self, **kwargs):
 		ctx = super().get_context_data(**kwargs)
 		commission = self.get_object()
-		jobs = Job.objects.filter(commission=commission)
-		ctx['jobs'] = jobs
-		ctx['job_application_form'] = JobApplicationForm()
+		jobs_in_commission = Job.objects.filter(commission=commission)
+		job_applications = JobApplication.objects.filter(job__in=jobs_in_commission)
+		job_app_forms = []
+		for job_app in job_applications:
+			job_app_form = JobApplicationForm(instance=job_app) 
+			job_app_forms.append(job_app_form)
+
+		ctx['jobs'] = jobs_in_commission
+		ctx['job_applications'] = job_applications
+		ctx['job_app_forms'] = job_app_forms
 		return ctx
 
 	def post(self, request, *args, **kwargs):
+		post = request.POST
+		temp_post = dict(post)
 		commission = self.get_object()
-		commission_form = CommissionForm(request.POST, instance=commission)
-		if commission_form.is_valid():
-			commission = commission_form.save(commit=False)
-			commission.save()
+		statuses = temp_post['status']
 
-			temp_post = dict(request.POST)
-			for job in Job.objects.filter(commission=commission):
-				job.role = temp_post['job_role_'+str(job.pk)][0]
-				job.manpower_required = temp_post['job_manpower_required_'+str(job.pk)][0]
-				job.save()
+		commission_form = CommissionForm(instance=commission)
+		update_comm = commission_form.save(commit=False)
+		update_comm.title = temp_post['title'][0]
+		update_comm.description = temp_post['description'][0]
+		update_comm.status = statuses[0]
+		update_comm.save()
 
-			return redirect('commissions:commission-detail', pk=commission.pk)
-		else:
-			return self.form_invalid(commission_form)
+		jobs_in_commission = Job.objects.filter(commission=commission)
+		for job in jobs_in_commission:
+			job.role = temp_post['job_role_'+str(job.pk)][0]
+			job.manpower_required = temp_post['job_manpower_required_'+str(job.pk)][0]
+			job.save()
 
-	def get_job_forms(self, post_data):
-		job_forms = []
-		for key, value in post_data.items():
-			if key.startswith('job_role_'):
-				job_pk = int(key.replace('job_role_', ''))
-				job = Job.objects.get(pk=job_pk)
-				job_form = JobForm(post_data, instance=job)
-				job_forms.append(job_form)
-		return job_forms
+		job_applications = JobApplication.objects.filter(job__in=jobs_in_commission)
+		counter = 1
+		for job_app in job_applications:
+			job_app_form = JobApplicationForm(instance=job_app) 
+			update_job_app_form = job_app_form.save(commit=False)
+			update_job_app_form.status = statuses[counter]
+			update_job_app_form.save()
+			counter += 1
+
+		return redirect('commissions:commission-detail', pk=commission.pk)
 
 	def form_invalid(self, form):
 		ctx = self.get_context_data(form=form)

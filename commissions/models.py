@@ -48,7 +48,11 @@ class Job(models.Model):
 
     def update_ongoing_manpower(self):
         accepted = self.applicants.filter(status='accepted').count()
-        self.ongiong_manpower = accepted
+        self.ongoing_manpower = accepted
+        if self.ongoing_manpower >= self.manpower_required:
+            self.status = 'full'
+        else:
+            self.status = 'open'
         self.save()
 
     class Meta:
