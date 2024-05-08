@@ -1,15 +1,36 @@
 {% extends "base.html" %}
 
-{% block title %}Merchandise Store{% endblock title %}
+{% block title %}Products{% endblock title %}
 
 {% block content %}
-<h1>Merchandise Store</h1>
-{% for product_type in object_list %}
-    <h2>{{ product_type.name }}</h2>
-    <ul>
-        {% for product in product_type.products.all %}    
-            <li><h3><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h3></li>
-        {% endfor %}
-    </ul>
-{% endfor %}
+    <h1>Merchandise Store</h1>
+    <h3><a href="{% url 'merchstore:product-list' %}">Back to list</a></h3> 
+
+    {% if request.user.is_authenticated %}
+        <h2>My Products</h2>
+            <ul>
+                {% for product in products_by_owner %}
+                    <li><h3><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h3></li>
+                {% endfor %}
+            </ul>
+       <h3><a href="{% url 'merchstore:product-create' %}"><button>Add product</button></a></h3> 
+    {% endif %}
+
+    <h2>All Products</h2>
+    {% for product_type in object_list %}
+        <h3>{{ product_type }}</h3>
+        <ul>
+            {% if request.user.is_authenticated %}
+                {% for product in product_type.products.all %}  
+                    {% if product not in products_by_owner %}
+                        <li><h3><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h3></li>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                {% for product in product_type.products.all %}  
+                    <li><h3><a href="{{ product.get_absolute_url }}">{{ product.name }}</a></h3></li>
+                {% endfor %}
+            {% endif %}
+        </ul>
+    {% endfor %}
 {% endblock content %}

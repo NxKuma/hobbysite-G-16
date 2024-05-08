@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Cart{% endblock title %}
+
+{% block content %}
+    <h1>Your Cart</h1>
+    <h3><a href="{% url 'merchstore:product-list' %}">Back to list</a></h3> 
+
+    {% for seller in list_of_sellers %}
+        {% if seller.user.username != request.user.username %}
+            <h2>{{ seller.display_name }}</h3>
+        {% endif %}
+        {% for transaction in transactions_by_buyer %}
+            {% if seller.user == transaction.product.owner.user %}
+                <li>Product: {{ transaction.product.name }}</li>
+                <ul>
+                    <p>
+                        Buyer: {{ transaction.buyer.display_name }} <br>
+                        Amount: {{ transaction.amount }} <br>
+                        Status: {{ transaction.status }} <br>
+                        Created on: {{ transaction.created_on }}
+                    </p>
+                </ul>
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+{% endblock content %}
