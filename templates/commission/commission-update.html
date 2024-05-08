@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <a href="{% url 'commissions:commission-detail' pk=commission.pk %}"><button>Cancel</button></a>
+
     <form method="POST" enctype="multipart/form-data">
         <h3>Commission Update</h3>
         {% csrf_token %}

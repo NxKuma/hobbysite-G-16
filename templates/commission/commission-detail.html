@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 
 {% block content %}
+
+    <a href="{% url 'commissions:commission' %}"><button>Back to List</button></a>
+
     <h1>{{ commission.title }}</h1>
     <h3>by {{ commission.author }}</br>
         status: {{ commission.status }}</h3>
@@ -25,10 +28,10 @@
             {% if request.user.is_authenticated %}
                 {% if request.user != commission.author.user %}
                     <form action="{% url 'commissions:commission-detail' pk=commission.pk %}" method="POST">
+                        
                         {% csrf_token %}
                         {{ job_application_form.field.as_hidden }}
-                        
-                        {% if job.manpower_required == job.ongoing_manpower or job.applicants.status == 'accepted' %}
+                        {% if job.manpower_required == job.ongoing_manpower %}
                             <button type="submit" disabled>Apply</button>
                         {% else %}
                             <button type="submit">Apply</button>

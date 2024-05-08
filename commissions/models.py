@@ -14,8 +14,8 @@ class Commission(models.Model):
         related_name='commission'
     )
     description = models.TextField()
-    status = models.CharField(max_length=12, choices=(('open','open'), ('full', 'full'), ('completed','completed'),
-        ('discontinued','discontinued'),), default='open')
+    status = models.CharField(max_length=12, choices=((0,'open'), (1, 'full'), (2,'completed'),
+        (3,'discontinued'),), default=0)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
 
@@ -26,7 +26,7 @@ class Commission(models.Model):
         return reverse('commissions:commission-detail', args=[self.pk])
 
     class Meta:
-        ordering = ['created_on',]
+        ordering = ['created_on']
 
 
 class Job(models.Model):
@@ -38,7 +38,7 @@ class Job(models.Model):
     role = models.CharField(max_length=255)
     manpower_required = models.IntegerField()
     ongoing_manpower = models.IntegerField(default=0)
-    status = models.CharField(max_length=4, choices=(('open','open'), ('full','full'),), default='open')
+    status = models.CharField(max_length=4, choices=((0,'open'), (1,'full'),), default=0)
 
     def __str__(self):
         return self.role
@@ -70,8 +70,8 @@ class JobApplication(models.Model):
         on_delete=models.CASCADE,
         related_name='job_applications'
     )
-    status = models.CharField(max_length=8, choices=(('pending','pending'), ('accepted','accepted'),
-        ('rejected','rejected'),), default='pending')
+    status = models.CharField(max_length=8, choices=((0,'pending'), (1,'accepted'),
+        (2,'rejected'),), default=0)
     applied_on = models.DateTimeField(auto_now_add=True)
 
     def get_absolute_url(self):

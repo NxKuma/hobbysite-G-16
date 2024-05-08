@@ -186,7 +186,7 @@ class CommissionUpdateView(LoginRequiredMixin, UpdateView):
 			total_manpower_required += job.manpower_required
 
 		if statuses[0] == "open" and total_manpower_required == total_ongoing_power:
-			update_comm.status = "full"
+			update_comm.status = 1
 		else:
 			update_comm.status = statuses[0]
 		update_comm.save()
