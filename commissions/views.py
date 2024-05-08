@@ -139,8 +139,9 @@ class CommissionUpdateView(LoginRequiredMixin, UpdateView):
 	template_name = "commission-update.html"
 
 	def get_context_data(self, **kwargs):
-		ctx = super().get_context_data(**kwargs)
 		commission = self.get_object()
+		self.object = commission
+		ctx = super().get_context_data(**kwargs)
 		jobs_in_commission = Job.objects.filter(commission=commission)
 		job_applications = JobApplication.objects.filter(job__in=jobs_in_commission)
 		job_app_forms = []
@@ -151,6 +152,9 @@ class CommissionUpdateView(LoginRequiredMixin, UpdateView):
 		ctx['jobs'] = jobs_in_commission
 		ctx['job_applications'] = job_applications
 		ctx['job_app_forms'] = job_app_forms
+
+		if 'error' in kwargs.keys():
+			ctx['error_msg'] = 'You cannot accept more accepted applicants than manpower reuqired'
 		return ctx
 
 	def post(self, request, *args, **kwargs):
@@ -161,12 +165,12 @@ class CommissionUpdateView(LoginRequiredMixin, UpdateView):
 		total_manpower_required = total_ongoing_power = 0
 
 		jobs_in_commission = Job.objects.filter(commission=commission)
+		job_applications = JobApplication.objects.filter(job__in=jobs_in_commission)
+
 		for job in jobs_in_commission:
 			job.role = temp_post['job_role_'+str(job.pk)][0]
 			job.manpower_required = temp_post['job_manpower_required_'+str(job.pk)][0]
-			job.save()
 
-		job_applications = JobApplication.objects.filter(job__in=jobs_in_commission)
 		counter = 1
 		for job_app in job_applications:
 			job_app_form = JobApplicationForm(instance=job_app) 
@@ -174,6 +178,16 @@ class CommissionUpdateView(LoginRequiredMixin, UpdateView):
 			update_job_app_form.status = statuses[counter]
 			update_job_app_form.save()
 			counter += 1
+
+		for job in jobs_in_commission:
+			job.role = temp_post['job_role_'+str(job.pk)][0]
+			job.manpower_required = temp_post['job_manpower_required_'+str(job.pk)][0]
+			job_apps = job_applications.filter(job=job)
+			job_accepted = job_apps.filter(status=1)
+			if int(job.manpower_required) < len(job_accepted):
+				return self.render_to_response(self.get_context_data(object=commission, error=1))
+			else:
+				job.save()
 		
 		commission_form = CommissionForm(instance=commission)
 		update_comm = commission_form.save(commit=False)

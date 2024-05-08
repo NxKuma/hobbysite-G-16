@@ -9,6 +9,7 @@
         {{ form.as_div }}        
 
         <h3>Job Update</h3>
+        {{ error_msg }} <br> <br>
         {% for job in jobs %}
             <label>Role for {{ job.role }}:</label>
             <input type="text" name="job_role_{{ job.pk }}" value="{{ job.role }}" required><br>
