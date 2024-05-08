@@ -22,7 +22,7 @@
 
     <h3>Job List</h3>
         {% for job in jobs_in_commission %}
-            <p> {{  job.role  }}: Total {{ job.manpower_required }} | Ongoing {{ job.ongoing_manpower }}</br>
+            <p> {{  job.role  }}: Total Required {{ job.manpower_required }} | Ongoing {{ job.ongoing_manpower }}</br>
                 {{ job.get_status_display }}</p>
 
             {% if request.user.is_authenticated %}
