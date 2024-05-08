@@ -144,29 +144,40 @@
 display: inline-block;
 position: absolute;
 top: 440px;
-left: 470px;" class="body_button">Forum</button>
+left: 470px;" class="body_button">
+<a href="{% url 'forum:thread-list' %}">
+Forum</a></button>
 
 <button style="position: relative;
 display: inline-block;
 position: absolute;
 top: 610px;
-left: 310px;" class="body_button">Blog</button>
+left: 310px;" class="body_button">
+<a href="{% url 'blog:article-list' %}">
+Blog</a></button>
 
 <button style="position: relative;
 display: inline-block;
 position: absolute;
 top: 840px;
-left: 200px;" class="body_button">Commissions</button>
+left: 200px;" class="body_button">
+<a href="{% url 'commissions:commission' %}">
+Commission</a></button>
 
 <button style="position: relative;
 display: inline-block;
 position: absolute;
 top: 900px;
-left: 510px;" class="body_button">Wiki</button>
+left: 510px;" class="body_button">
+
+<a href="{% url 'wiki:article-list' %}">
+Wiki</a></button>
 
 <button style="position: relative;
 display: inline-block;
 position: absolute;
 top: 820px;
-left: 710px;" class="body_button">Merchstore</button>
+left: 710px;" class="body_button">
+<a href="{% url 'merchstore:product-list' %}">
+    Merchstore</a></button>
 {% endblock %}
