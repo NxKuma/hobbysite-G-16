@@ -14,8 +14,8 @@ class Commission(models.Model):
         related_name='commission'
     )
     description = models.TextField()
-    status = models.CharField(max_length=12, choices=((0,'open'), (1, 'full'), (2,'completed'),
-        (3,'discontinued'),), default=0)
+    status = models.CharField(max_length=12, choices=(('0','open'), ('1', 'full'), ('2','completed'),
+        ('3','discontinued'),), default='0')
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
 
@@ -38,7 +38,7 @@ class Job(models.Model):
     role = models.CharField(max_length=255)
     manpower_required = models.IntegerField()
     ongoing_manpower = models.IntegerField(default=0)
-    status = models.CharField(max_length=4, choices=((0,'open'), (1,'full'),), default=0)
+    status = models.CharField(max_length=4, choices=(('0','open'), ('1','full'),), default='0')
 
     def __str__(self):
         return self.role
@@ -47,12 +47,12 @@ class Job(models.Model):
         return reverse('commissions:job', args=[self.pk])
 
     def update_ongoing_manpower(self):
-        accepted = self.applicants.filter(status='accepted').count()
+        accepted = self.applicants.filter(status='1').count()
         self.ongoing_manpower = accepted
         if self.ongoing_manpower >= self.manpower_required:
-            self.status = 'full'
+            self.status = '1'
         else:
-            self.status = 'open'
+            self.status = '0'
         self.save()
 
     class Meta:
@@ -70,8 +70,8 @@ class JobApplication(models.Model):
         on_delete=models.CASCADE,
         related_name='job_applications'
     )
-    status = models.CharField(max_length=8, choices=((0,'pending'), (1,'accepted'),
-        (2,'rejected'),), default=0)
+    status = models.CharField(max_length=8, choices=(('0','pending'), ('1','accepted'),
+        ('2','rejected'),), default='0')
     applied_on = models.DateTimeField(auto_now_add=True)
 
     def get_absolute_url(self):

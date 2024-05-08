@@ -6,7 +6,7 @@
 
     <h1>{{ commission.title }}</h1>
     <h3>by {{ commission.author }}</br>
-        status: {{ commission.status }}</h3>
+        status: {{ commission.get_status_display }}</h3>
     <p> Description: {{ commission.description }} </br>
         Total Manpower Required: {{ total_manpower_required }}</br>
         Total Open manpower: {{ open_manpower }}</p>
@@ -23,7 +23,7 @@
     <h3>Job List</h3>
         {% for job in jobs_in_commission %}
             <p> {{  job.role  }}: Total {{ job.manpower_required }} | Ongoing {{ job.ongoing_manpower }}</br>
-                {{ job.status }}</p>
+                {{ job.get_status_display }}</p>
 
             {% if request.user.is_authenticated %}
                 {% if request.user != commission.author.user %}
@@ -42,7 +42,7 @@
                         {% for job_app in job_applications %}
                             {% if job.role == job_app.job.role %}
                                 {% if job_app.applicant.user == request.user %}
-                                    <span> status: {{ job_app.status }}</span>
+                                    <span> status: {{ job_app.get_status_display }}</span>
                                 {% endif %}
                             {% endif %}
                         {% endfor %}

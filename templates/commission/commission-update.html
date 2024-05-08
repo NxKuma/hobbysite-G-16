@@ -6,7 +6,7 @@
     <form method="POST" enctype="multipart/form-data">
         <h3>Commission Update</h3>
         {% csrf_token %}
-        {{ form.as_div|safe }}        
+        {{ form.as_div }}        
 
         <h3>Job Update</h3>
         {% for job in jobs %}
