@@ -158,13 +158,7 @@ class CommissionUpdateView(LoginRequiredMixin, UpdateView):
 		temp_post = dict(post)
 		commission = self.get_object()
 		statuses = temp_post['status']
-
-		commission_form = CommissionForm(instance=commission)
-		update_comm = commission_form.save(commit=False)
-		update_comm.title = temp_post['title'][0]
-		update_comm.description = temp_post['description'][0]
-		update_comm.status = statuses[0]
-		update_comm.save()
+		total_manpower_required = total_ongoing_power = 0
 
 		jobs_in_commission = Job.objects.filter(commission=commission)
 		for job in jobs_in_commission:
@@ -180,6 +174,22 @@ class CommissionUpdateView(LoginRequiredMixin, UpdateView):
 			update_job_app_form.status = statuses[counter]
 			update_job_app_form.save()
 			counter += 1
+		
+		commission_form = CommissionForm(instance=commission)
+		update_comm = commission_form.save(commit=False)
+		update_comm.title = temp_post['title'][0]
+		update_comm.description = temp_post['description'][0]
+
+		for job in commission.jobs.all():
+			job.update_ongoing_manpower()
+			total_ongoing_power += job.ongoing_manpower
+			total_manpower_required += job.manpower_required
+
+		if statuses[0] == "open" and total_manpower_required == total_ongoing_power:
+			update_comm.status = "full"
+		else:
+			update_comm.status = statuses[0]
+		update_comm.save()
 
 		return redirect('commissions:commission-detail', pk=commission.pk)
 

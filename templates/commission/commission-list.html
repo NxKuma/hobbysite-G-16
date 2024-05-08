@@ -25,8 +25,16 @@
     {% endif %}
     <h2>All Commissions</h2>
     <ul>
-        {% for commission in object_list %}
-            <li><a href="{{ commission.get_absolute_url }}">{{ commission.title }}</a></li>
-        {% endfor %}
+        {% if request.user.is_authenticated %}
+            {% for commission in object_list %}
+                {% if commission not in commission_by_user and commission not in applied_by_user %}
+                    <li><a href="{{ commission.get_absolute_url }}">{{ commission.title }}</a></li>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            {% for commission in object_list %}
+                <li><a href="{{ commission.get_absolute_url }}">{{ commission.title }}</a></li>
+            {% endfor %}
+        {% endif %}
     </ul>
 {% endblock content %}

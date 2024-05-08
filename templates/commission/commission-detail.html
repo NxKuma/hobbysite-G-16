@@ -28,7 +28,7 @@
                         {% csrf_token %}
                         {{ job_application_form.field.as_hidden }}
                         
-                        {% if job.manpower_requried == job.ongoing_manpower or job.applicants.status == 'accepted' %}
+                        {% if job.manpower_required == job.ongoing_manpower or job.applicants.status == 'accepted' %}
                             <button type="submit" disabled>Apply</button>
                         {% else %}
                             <button type="submit">Apply</button>
