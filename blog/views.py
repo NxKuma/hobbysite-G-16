@@ -1,6 +1,6 @@
 from django.views.generic.list import ListView
 from django.urls import reverse_lazy
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -39,9 +39,11 @@ class ArticleDetailView(DetailView):
         ctx = super().get_context_data(**kwargs)
         article = self.get_object()
         if self.request.user.is_authenticated:
-            author = ProfileModel.Profile.objects.get(user=article.author.user) 
+            author = ProfileModel.Profile.objects.get(user=self.request.user)
             articles_by_author = Article.objects.filter(author=author)
+            related_articles = Article.objects.filter(author=article.author)
             ctx['articles_by_author'] = articles_by_author
+            ctx['related_articles'] = related_articles
             ctx['viewer'] = author
             ctx['form'] = CommentForm(initial={'author': author, 'article': article})
         return ctx
@@ -95,3 +97,9 @@ class ArticleUpdateView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         return super().form_valid(form)
+    
+def ArticleGalleryView(request):
+    articleImages = Article.objects.all()
+
+    ctx = {"articles": articleImages}
+    return render(request, "blog-gallery.html", ctx)

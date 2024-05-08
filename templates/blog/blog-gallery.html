@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %} Gallery {% endblock %}
+{% block content %} 
+
+<head>
+    <style>
+        div.gallery {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+
+        div.image {
+            margin: 3px;
+            width: auto;
+            max-width: fit-content;
+        }
+
+        div.image:hover {
+            border: 3px solid #E85A4F;
+        }
+
+        div.image img {
+            width: 500px;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        div.desc {
+            padding: 15px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Gallery</h2>
+    <h2>
+        <a href="/blog/articles"><button class="body_button">Back to articles</button></a>
+    </h2>
+    <div class="gallery">
+        {% for article in articles %}
+        <div class="image">
+            <a target="_self" href="{{ article.get_absolute_url }}">
+              {% if article.image %}
+                <img src="{{ article.image.url }}" alt="Image">
+              {% else %}
+                <p>Image not available.</p>
+              {% endif %}
+            </a>
+            <div class="desc"> {{ article.title }} </div>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+
+{% endblock %}

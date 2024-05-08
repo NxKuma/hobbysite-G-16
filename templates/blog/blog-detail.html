@@ -5,9 +5,11 @@
   {{ article.title }}
 {% endblock title %}
 
-{% block content %}
-  <a href="/blog/articles"><button class = "body_button">Back to articles</button></a>
+{% block style}<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN">
 
+{% block content %}
+
+  <a href="/blog/articles"><button class="body_button">Back to articles</button></a>
   <h2>{{ article.title }}</h2>
   <h3>by {{ article.author }}</h3>
 
@@ -22,48 +24,53 @@
 
   <p>{{ article.entry }}</p>
 
-  {% if request.user.is_authenticated %}
-    <h3>Submit a Comment</h3>
-    <form method="post">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <button type="submit" class = "body_button">Submit</button>
-    </form>
-  {% else %}
-    <p>Please <a href="{% url 'login' %}">login</a> to submit a comment.</p>
-  {% endif %}
-
-  <br>
   {% if viewer == article.author %}
-  <a href="{% url 'blog:article-update' pk=view.kwargs.pk %}"><button class = "body_button">Update Blog</button></a>
+  <a href="{% url 'blog:article-update' pk=view.kwargs.pk %}"><button class="body_button">Update Blog</button></a>
+  <br>
   {% else %}  
     <p>You must be the author of this blog to edit the page.</p>
   {% endif %}
   
+  {% if request.user.is_authenticated %}
+    <h3>Submit a Comment</h3>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_div }}
+      <button type="submit" class="body_button">Submit</button>
+    </form>
+  {% else %}
+    <p>Please <a href="{% url 'login' %}">login</a> to submit a comment.</p>
+  {% endif %}
+  
   <h3>Comments</h3>
-  <ul>
+  <div class="container">
     {% for comment in article.comments.all %}
-      <li>
-        <h4>{{ comment.author }}</h4>
-        <p>{{ comment.entry }}</p>
-        <p>Created On: {{ comment.created_on }}</p>
-        <p>Updated On: {{ comment.updated_on }}</p>
-      </li>
+    <div class="row">
+      <div class="col-md-8">
+          <div class="media g-mb-30 media-comment">
+              <img class="d-flex g-width-50 g-height-50 rounded-circle g-mt-3 g-mr-15" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRKZR3LgB_kPu-elRBgLF1Am5ciHPV0gdJiQCu5yJRSPQ&s" alt="Image Description">
+              <div class="media-body u-shadow-v18 g-bg-secondary g-pa-30">
+                <div class="g-mb-15">
+                  <h5 class="h5 g-color-gray-dark-v1 mb-0">{{ comment.author }}</h5>
+                  <span class="g-color-gray-dark-v4 g-font-size-12">Created On: {{ comment.created_on }} | Updated On: {{ comment.updated_on }}</span>
+                </div>
+                <p>{{ comment.entry }}</p>
+              </div>
+          </div>
+        </div>
+      </div>
     {% empty %}
       <li>No comments yet.</li>
     {% endfor %}
-  </ul>
+  </div>
 
   <h4>Related Articles by {{ article.author }}</h4>
-  <ul>
-      {% for article in articles_by_author %}
+      {% for article in related_articles %}
           {% if forloop.counter0 <= 2 %}
               {% if article.pk != object.pk %}
-                  <li><a href="{{ article.get_absolute_url }}">{{ article.title }}</a></li>
+                <li><a href="{{ article.get_absolute_url }}">{{ article.title }}</a></li>
               {% endif %}
           {% endif %}
       {% endfor %} 
-  </ul>
-  
-
 {% endblock content %}
+
