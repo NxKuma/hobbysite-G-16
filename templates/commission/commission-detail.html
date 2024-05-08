@@ -1,18 +1,54 @@
 {% extends "base.html" %}
 
 {% block content %}
+
+    <a href="{% url 'commissions:commission' %}"><button>Back to List</button></a>
+
     <h1>{{ commission.title }}</h1>
-    <p> {{ commission.description }} </br>
-        {{ commission.people_required }} people</p>
+    <h3>by {{ commission.author }}</br>
+        status: {{ commission.get_status_display }}</h3>
+    <p> Description: {{ commission.description }} </br>
+        Total Manpower Required: {{ total_manpower_required }}</br>
+        Total Open manpower: {{ open_manpower }}</p>
     <p> Created on {{ commission.created_on }}<br>
         Updated on {{ commission.updated_on }}</p>
 
-    <h2>Comments</h2>
-    {% for comment in commission.comment.all %}
-        <p>{{ comment.entry }}</p>
-        <p> created: {{ comment.created_on }} <br>
-            updated: {{ comment.updated_on }} </p>
-        <br>   
-    {% endfor %}
+    {% if request.user.is_authenticated %}
+        <p>You can apply to a job as {{ display_name_of_user }}</p>
+        {% if request.user == commission.author.user %}
+            <a href="{% url 'commissions:commission-update' pk=commission.pk %}">Update Commission</a>
+        {% endif %}
+    {% endif %}
 
+    <h3>Job List</h3>
+        {% for job in jobs_in_commission %}
+            <p> {{  job.role  }}: Total Required {{ job.manpower_required }} | Ongoing {{ job.ongoing_manpower }}</br>
+                {{ job.get_status_display }}</p>
+
+            {% if request.user.is_authenticated %}
+                {% if request.user != commission.author.user %}
+                    <form action="{% url 'commissions:commission-detail' pk=commission.pk %}" method="POST">
+                        
+                        {% csrf_token %}
+                        {{ job_application_form.field.as_hidden }}
+                        {% if job.manpower_required == job.ongoing_manpower %}
+                            <button type="submit" disabled>Apply</button>
+                        {% else %}
+                            <button type="submit">Apply</button>
+                        {% endif %}
+                        
+                        <input type="hidden" name="job_pk" value="{{ job.pk }}">
+                        
+                        {% for job_app in job_applications %}
+                            {% if job.role == job_app.job.role %}
+                                {% if job_app.applicant.user == request.user %}
+                                    <span> status: {{ job_app.get_status_display }}</span>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </form>
+                {% endif %} 
+            {% endif %}
+        {% endfor %}
+    
 {% endblock content %}
