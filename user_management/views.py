@@ -27,11 +27,11 @@ class Index(View):
 def index(request):
      ctx = {
          "models" :{
-             "merchstore":merchmodel,
-             "forum":forummodel,
-             "wiki":wikimodel,
-             "commission":commodel,
-             "blog":blogmodel,
+             "merchstore":merchmodel.ProductType,
+             "forum":forummodel.ThreadCategory,
+             "wiki":wikimodel.ArticleCategory,
+             "commission":commodel.Commission,
+             "blog":blogmodel.ArticleCategory,
          }
      }
      return render(request, 'index.html', ctx)
