@@ -52,6 +52,7 @@ class RegisterProfileView(CreateView):
         return reverse_lazy('user_management:index')
     
 def index(request):
+
      ctx = {
         "merch_list":merchmodel.ProductType.objects.all,
         "forum_list":forummodel.ThreadCategory.objects.all,
@@ -59,4 +60,14 @@ def index(request):
         "com_list":commodel.Commission.objects.all,
         "blog_list":blogmodel.ArticleCategory.objects.all,
      }
+
+     if request.user.is_authenticated:
+        user = Profile.objects.get(user=request.user.id)
+        ctx = {
+            # 'products_by_user':merchmodel.Product.objects.filter(owner=user),
+            'threads_by_user':forummodel.Thread.objects.filter(author=user),
+            # 'wiki_articles_by_user':wikimodel.Article.objects.filter(author=user),
+            # 'comm_articles_by_user':commodel.Commission.objects.filter(author=user),
+            # 'blog_articles_by_user':blogmodel.Article.objects.filter(author=user),
+        }
      return render(request, 'index.html', ctx)

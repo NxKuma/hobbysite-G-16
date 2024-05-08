@@ -12,6 +12,11 @@
                     <p>{{ products.title }}</p>
                 {% endfor %}
             {% endfor %}    
+            
+            <h2>My Products</h2>
+            {% for product in products_by_user %}
+                <p>{{ products.name }}</p>
+            {% endfor %}
         </div>
 
         <div>
@@ -19,6 +24,11 @@
             {% for commission in com_list %}
                 <h3>{{commission}}</h3>
 
+            {% endfor %}
+
+            <h2>My Commissions</h2>
+            {% for commission in comm_articles_by_user %}
+                <p>{{ commission.title }}</p>
             {% endfor %}
         </div>
 
@@ -30,6 +40,11 @@
                     <p>{{ article.title }}</p>
                 {% endfor %}
             {% endfor %}
+
+            <h2>My Blogs</h2>
+            {% for article in blog_articles_by_user %}
+                <p>{{ article.title }}</p>
+            {% endfor %}
         </div>
 
         <div>
@@ -39,6 +54,11 @@
                 {% for article in article_category.articles.all %}
                     <p>{{ article.title }}</p>
                 {% endfor %}
+            {% endfor %}
+
+            <h2>My Articles</h2>
+            {% for article in wiki_articles_by_user %}
+                <p>{{ article.title }}</p>
             {% endfor %}
         </div>
 
@@ -50,6 +70,11 @@
                     <p>{{ thread.title }}</p>
                 {% endfor %}
             {% endfor %}
+
+            <h2>My Threads</h2>
+            {% for thread in threads_by_user %}
+                <p>{{ thread.title }}</p>
+            {% endfor %}
         </div>
     {% else %}
     <div>
@@ -59,14 +84,23 @@
             {% for products in product_type.products.all %}
                 <p>{{ products.title }}</p>
             {% endfor %}
-        {% endfor %}    
+        {% endfor %}
+        
+        <h2>My Products</h2>
+        {% for product in products_by_user %}
+            <p>{{ products.name }}</p>
+        {% endfor %}
     </div>
 
     <div>
         <h1>Commission</h1>
         {% for commission in com_list %}
             <h3>{{commission}}</h3>
+        {% endfor %}
 
+        <h2>My Commissions</h2>
+        {% for commission in comm_articles_by_user %}
+            <p>{{ commission.title }}</p>
         {% endfor %}
     </div>
 
@@ -77,6 +111,11 @@
             {% for article  in article_category.articles.all %}
                 <p>{{ article.title }}</p>
             {% endfor %}
+        {% endfor %}
+
+        <h2>My Blogs</h2>
+        {% for article in blog_articles_by_user %}
+            <p>{{ article.title }}</p>
         {% endfor %}
     </div>
 
