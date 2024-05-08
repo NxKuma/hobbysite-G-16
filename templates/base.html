@@ -25,6 +25,16 @@
         <h1>(～￣▽￣)～☆ HOBBYSITE ☆～(￣▽￣～)</h1>
     </header>
     <div id="content">
+        {% if request.user.is_authenticated %}
+            <form action="{% url 'logout' %}" method="post">
+                {% csrf_token %}
+                <button type="submit">Logout</button>
+            </form>
+        {% else %}
+            {% if request.get_full_path != '/accounts/login/' %}
+                <a href="{% url 'login' %}">Login</a>
+            {% endif %}
+        {% endif %}
         {% block content %}{% endblock %}
     </div>
 </body>
