@@ -6,6 +6,8 @@
 {% endblock title %}
 
 {% block content %}
+  <a href="/blog/articles"><button class = "body_button">Back to articles</button></a>
+
   <h2>{{ article.title }}</h2>
   <h3>by {{ article.author }}</h3>
 
@@ -25,7 +27,7 @@
     <form method="post">
       {% csrf_token %}
       {{ form.as_p }}
-      <button type="submit">Submit</button>
+      <button type="submit" class = "body_button">Submit</button>
     </form>
   {% else %}
     <p>Please <a href="{% url 'login' %}">login</a> to submit a comment.</p>
@@ -33,13 +35,10 @@
 
   <br>
   {% if viewer == article.author %}
-  <a href="{% url 'blog:article-update' pk=view.kwargs.pk %}"><button>Update Blog</button></a>
-  <br>
+  <a href="{% url 'blog:article-update' pk=view.kwargs.pk %}"><button class = "body_button">Update Blog</button></a>
   {% else %}  
     <p>You must be the author of this blog to edit the page.</p>
   {% endif %}
-
-  <a href="/blog/articles"><button>Back to articles</button></a>
   
   <h3>Comments</h3>
   <ul>

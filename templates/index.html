@@ -1,6 +1,36 @@
 {% extends 'base.html' %}
+{%load static%}
 
 {% block content %}
-    <p>Grabe</p>
+<img src = "{% static 'image/room.png' %}" style = "width:1000px;height:1000px;margin-left: auto;margin-right:auto;">
 
+<button style="position: relative;
+display: inline-block;
+position: absolute;
+top: 440px;
+left: 470px;" class="body_button">Forum</button>
+
+<button style="position: relative;
+display: inline-block;
+position: absolute;
+top: 610px;
+left: 310px;" class="body_button">Blog</button>
+
+<button style="position: relative;
+display: inline-block;
+position: absolute;
+top: 840px;
+left: 200px;" class="body_button">Commissions</button>
+
+<button style="position: relative;
+display: inline-block;
+position: absolute;
+top: 900px;
+left: 510px;" class="body_button">Wiki</button>
+
+<button style="position: relative;
+display: inline-block;
+position: absolute;
+top: 820px;
+left: 710px;" class="body_button">Merchstore</button>
 {% endblock %}

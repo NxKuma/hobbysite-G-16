@@ -3,40 +3,30 @@
 <head>
     <title>{% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
-    <!-- <script src = "{% static 'js/main.js' %}"></script> -->
+    {% block style %}
+    {% endblock %}
 </head>
 <body>
     <header>
+        <center>
         <h1>(～￣▽￣)～☆ HOBBYSITE ☆～(￣▽￣～)</h1>
-        
+        </center>
     </header>
-    <p class="navbar">
-        <a href="{% url 'user_management:index' %}" class="btn">Dashboard</a>
-        <a href="{% url 'merchstore:product-list' %}" class="btn">Merchstore</a>
-        <a href="{% url 'commissions:commission' %}" class="btn">Commission</a>
-        <a href="{% url 'blog:article-list' %}" class="btn">Blog</a>
-        <a href="{% url 'wiki:article-list' %}" class="btn">Wiki</a>
-        <a href="{% url 'forum:thread-list' %}" class="btn">Forum</a>
+    <p class="navbar" id="navbar">
+        <a href="{% url 'user_management:index' %}" class="btn {% if 'index' in request.resolver_match.view_name %}active{% endif %}">Dashboard</a>
+        <a href="{% url 'merchstore:product-list' %}" class="btn {% if 'merchstore' in request.resolver_match.view_name %}active{% endif %}">Merchstore</a>
+        <a href="{% url 'commissions:commission' %}" class="btn {% if 'commission' in request.resolver_match.view_name %}active{% endif %}">Commission</a>
+        <a href="{% url 'blog:article-list' %}" class="btn {% if 'blog' in request.resolver_match.view_name %}active{% endif %}">Blog</a>
+        <a href="{% url 'wiki:article-list' %}" class="btn {% if 'wiki' in request.resolver_match.view_name %}active{% endif %}">Wiki</a>
+        <a href="{% url 'forum:thread-list' %}" class="btn {% if 'forum' in request.resolver_match.view_name %}active{% endif %}">Forum</a>
         {% if request.user.is_authenticated %}
-            <a href="{% url 'logout' %}" id="log">Log Out</a>
+            <button class="header_button"><a href="{% url 'logout' %}" id="log">Log Out</a></button>
         {% else %}
-            <a href="{% url 'login' %}" id="log">Log In</a>
+            <button class="header_button"><a href="{% url 'login' %}">Login</a></button>
         {% endif %}
     </p>
-    
-
 
     <div id="content">
-        {% if request.user.is_authenticated %}
-            <form action="{% url 'logout' %}" method="post">
-                {% csrf_token %}
-                <button type="submit">Logout</button>
-            </form>
-        {% else %}
-            {% if request.get_full_path != '/accounts/login/' %}
-                <a href="{% url 'login' %}">Login</a>
-            {% endif %}
-        {% endif %}
         {% block content %}{% endblock %}
     </div>
 </body>
