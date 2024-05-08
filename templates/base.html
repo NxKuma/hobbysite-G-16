@@ -19,9 +19,9 @@
         <a href="{% url 'wiki:article-list' %}" class="btn {% if 'wiki' in request.resolver_match.view_name %}active{% endif %}">Wiki</a>
         <a href="{% url 'forum:thread-list' %}" class="btn {% if 'forum' in request.resolver_match.view_name %}active{% endif %}">Forum</a>
         {% if request.user.is_authenticated %}
-            <button class="header_button"><a href="{% url 'logout' %}" id="log">Log Out</a></button>
+            <button type="submit" class="header_button"><a href="{% url 'logout' %}" id="log">Log Out</a></button>
         {% else %}
-            <button class="header_button"><a href="{% url 'login' %}">Login</a></button>
+            <button type="submit" class="header_button"><a href="{% url 'login' %}">Login</a></button>
         {% endif %}
         <a href="{% url 'user_management:register' %}" id="log">Sign Up</a>
     </p>
