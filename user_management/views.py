@@ -1,10 +1,12 @@
 from django.shortcuts import render
-from django.http import HttpResponse 
-from django.views.generic.edit import UpdateView
-from django.views import View
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import authenticate, login
+from django.urls import reverse_lazy
+from django.views.generic.edit import CreateView, UpdateView
+
 
 from .models import Profile
+from .forms import RegisterForm
+
 from merchstore import models as merchmodel
 from forum import models as forummodel
 from wiki import models as wikimodel
@@ -12,21 +14,41 @@ from blog import models as blogmodel
 from commissions import models as commodel
 
 
+
 class ProfileUpdateView(UpdateView):
     model = Profile
+    fields = ['display_name', 'email']
     template_name = "profile-update.html"
+    success_url = reverse_lazy("profile:index")
+    
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        user_profile = form.save()
+        user = user_profile.user
+        user.email = form.cleaned_data.get('email')
+        user.save()
+        user_profile.save()
+        return response
 
 
-def registerPage(request):
-    form = UserCreationForm
-    if request == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
+class RegisterProfileView(CreateView):
+    model = Profile
+    form_class = RegisterForm
+    template_name = "register.html"
 
-    ctx = {'form':form}
-    return render(request, 'register.html', ctx)
-
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        reg_user = form.save()
+        user_profile = Profile.objects.get(user=reg_user)
+        user_profile.email = form.cleaned_data.get('email')
+        user_profile.display_name = form.cleaned_data.get('display_name')
+        user_profile.save()
+        reg_user.save()
+        login(self.request, reg_user, backend="django.contrib.auth.backends.ModelBackend")
+        return response
+    
+    def get_success_url(self):
+        return reverse_lazy('profile:index')
     
 def index(request):
      ctx = {
