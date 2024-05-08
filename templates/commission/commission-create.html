@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <a href="{% url 'commissions:commission' %}"><button>Back to List</button></a>
+
+    <form method="POST">
+        <h3>Commission Creation</h3>
+        {% csrf_token %}
+        {{ commission_form }}
+        <h3>Job Creation</h3>
+        <div id="jobFormsContainer">
+            <div class="jobFormTemplate">
+                {{ job_form }}
+            </div>
+        </div>
+        <button id="addJobButton" type="button">Add Job</button>
+        <br> <br>
+        <button type="submit">Create!</button>
+
+        <script>
+            document.getElementById("addJobButton").addEventListener("click", function() {
+                var jobFormTemplate = document.querySelector('.jobFormTemplate').cloneNode(true);
+                jobFormTemplate.classList.remove('jobFormTemplate');
+                jobFormTemplate.querySelectorAll('input[type="text"]').forEach(function(input) {
+                    input.value = "";
+                });
+                document.getElementById("jobFormsContainer").appendChild(jobFormTemplate);
+                jobFormTemplate.style.display = "block";
+        });
+        </script>
+    </form>
+{% endblock content %}

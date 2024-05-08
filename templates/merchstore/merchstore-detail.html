@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Product{% endblock title %}
+
+{% block content %}
+
+    <h1 class="headers">Product</h1>
+    <h3><a href="{% url 'merchstore:product-list' %}">Back to list</a></h3> 
+    
+    <h2>{{ product.name }}</h2>
+    <ul>
+        <p> 
+        Type: {{ product.product_type.name }} <br>
+        Price: P {{ product.price }} <br>
+        Description: {{ product.description }} <br>
+        Stock: {{ product.stock }} <br>
+        Seller: {{ product.owner }} <br>
+        Availability: {{ product.status }} 
+        </p>
+    </ul>
+
+    {% if request.user == product.owner.user %}
+        <h3><a href="{% url 'merchstore:product-update' pk=product.pk %}">Edit product</a></h3> 
+    {% else %}
+        <h2>Purchase</h2>
+        <form method="post">
+            {% if request.user.is_authenticated %}
+                <p>Buyer : {{ buyer }}</p>
+                <p>{{ error_msg2 }}</p>
+            {% endif %}
+            <p>Product : {{ product.name }}</p>
+            <p>{{ error_msg1 }}</p>
+            {% csrf_token %}
+            {{ transaction_form.as_p }}  
+            {% if product.stock == 0 %}
+                <button type="submit" disabled>Buy Now</button>
+            {% else %}
+                <button type="submit">Buy Now</button>
+            {% endif %}
+        </form>
+    {% endif %}
+    
+
+{% endblock content %}

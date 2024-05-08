@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <a href="{% url 'forum:thread-list' %}"><p>< Go Back to Threads </p></a>
+
+    {% if thread.image %}
+        <img src="{{ thread.image.url }}">
+    {% endif %}
+    
+    <h1>{{ thread.title }} | {{ thread.category }} </h1>
+    <h3>Author: {{ thread.author }}</h3>
+    <p>{{ thread.entry }}</p>
+    <p>Created On: {{ thread.created_on }} |   Updated On: {{ thread.updated_on }}  </p>
+    
+    {% if request.user.is_authenticated %}
+        {% if viewer == thread.author %}
+            <a href="{% url 'forum:thread-update' pk=view.kwargs.pk %}"><button>Update Thread</button></a>
+            <br>
+        {% endif %}
+    {% endif %}
+    <br>
+
+    <h2>Comments</h2>
+    {% for comment in thread.comments.all  %}
+            <h4>{{ comment.author }}</h4>
+            <p>{{ comment.entry }}</p>
+            <p>Created On: {{ comment.created_on }} | Updated On: {{ comment.updated_on }}</p>
+            <hr>
+    {% endfor %}
+
+    {% if request.user.is_authenticated %}
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_div }}
+            <button type="submit">Submit</button>
+        </form>
+    {% endif %}
+    <br>
+
+    <h4>Related Threads in {{ thread.category }}</h4>
+    <ul>
+        {% for thread in threads_in_category %}
+            {% if forloop.counter0 <= 2 %}
+                {% if thread.pk != object.pk %}
+                    <li><a href="{{ thread.get_absolute_url }}">{{ thread.title }}</a></li>
+                {% endif %}
+            {% endif %}
+        {% endfor %} 
+    </ul>
+{% endblock %}

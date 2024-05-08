@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+{%load static%}
+
+{% block content %}
+<img src = "{% static 'image/room.png' %}" style = "width:1000px;height:1000px;margin-left: auto;margin-right:auto;">
+    {% if request.user.is_authenticated %}
+        <div>
+            <h1>Merchstore</h1>
+            {% for product_type in merch_list %}
+                <h3>{{product_type}}</h3>
+                {% for products in product_type.products.all %}
+                    <p>{{ products.title }}</p>
+                {% endfor %}
+            {% endfor %}    
+            
+            <h2>My Products</h2>
+            {% for product in products_by_user %}
+                <p>{{ products.name }}</p>
+            {% endfor %}
+        </div>
+
+        <div>
+            <h1>Commission</h1>
+            {% for commission in com_list %}
+                <h3>{{commission}}</h3>
+
+            {% endfor %}
+
+            <h2>My Commissions</h2>
+            {% for commission in comm_articles_by_user %}
+                <p>{{ commission.title }}</p>
+            {% endfor %}
+        </div>
+
+        <div>
+            <h1>Blog</h1>
+            {% for article_category  in blog_list %}
+                <h3>{{article_category }}</h3>
+                {% for article  in article_category.articles.all %}
+                    <p>{{ article.title }}</p>
+                {% endfor %}
+            {% endfor %}
+
+            <h2>My Blogs</h2>
+            {% for article in blog_articles_by_user %}
+                <p>{{ article.title }}</p>
+            {% endfor %}
+        </div>
+
+        <div>
+            <h1>Wiki</h1>
+            {% for article_category in wiki_list %}
+                <h3>{{article_category}}</h3>
+                {% for article in article_category.articles.all %}
+                    <p>{{ article.title }}</p>
+                {% endfor %}
+            {% endfor %}
+
+            <h2>My Articles</h2>
+            {% for article in wiki_articles_by_user %}
+                <p>{{ article.title }}</p>
+            {% endfor %}
+        </div>
+
+        <div>
+            <h1>Forum</h1>
+            {% for thread_category in forum_list %}
+                <h3>{{thread_category}}</h3>
+                {% for thread in thread_category.threads.all %}
+                    <p>{{ thread.title }}</p>
+                {% endfor %}
+            {% endfor %}
+
+            <h2>My Threads</h2>
+            {% for thread in threads_by_user %}
+                <p>{{ thread.title }}</p>
+            {% endfor %}
+        </div>
+    {% else %}
+    <div>
+        <h1>Merchstore</h1>
+        {% for product_type in merch_list %}
+            <h3>{{product_type}}</h3>
+            {% for products in product_type.products.all %}
+                <p>{{ products.title }}</p>
+            {% endfor %}
+        {% endfor %}
+        
+        <h2>My Products</h2>
+        {% for product in products_by_user %}
+            <p>{{ products.name }}</p>
+        {% endfor %}
+    </div>
+
+    <div>
+        <h1>Commission</h1>
+        {% for commission in com_list %}
+            <h3>{{commission}}</h3>
+        {% endfor %}
+
+        <h2>My Commissions</h2>
+        {% for commission in comm_articles_by_user %}
+            <p>{{ commission.title }}</p>
+        {% endfor %}
+    </div>
+
+    <div>
+        <h1>Blog</h1>
+        {% for article_category  in blog_list %}
+            <h3>{{article_category }}</h3>
+            {% for article  in article_category.articles.all %}
+                <p>{{ article.title }}</p>
+            {% endfor %}
+        {% endfor %}
+
+        <h2>My Blogs</h2>
+        {% for article in blog_articles_by_user %}
+            <p>{{ article.title }}</p>
+        {% endfor %}
+    </div>
+
+    <div>
+        <h1>Wiki</h1>
+        {% for article_category in wiki_list %}
+            <h3>{{article_category}}</h3>
+            {% for article in article_category.articles.all %}
+                <p>{{ article.title }}</p>
+            {% endfor %}
+        {% endfor %}
+    </div>
+
+    <div>
+        <h1>Forum</h1>
+        {% for thread_category in forum_list %}
+            <h3>{{thread_category}}</h3>
+            {% for thread in thread_category.threads.all %}
+                <p>{{ thread.title }}</p>
+            {% endfor %}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+<button style="position: relative;
+display: inline-block;
+position: absolute;
+top: 440px;
+left: 470px;" class="body_button">
+<a href="{% url 'forum:thread-list' %}">
+Forum</a></button>
+
+<button style="position: relative;
+display: inline-block;
+position: absolute;
+top: 610px;
+left: 310px;" class="body_button">
+<a href="{% url 'blog:article-list' %}">
+Blog</a></button>
+
+<button style="position: relative;
+display: inline-block;
+position: absolute;
+top: 840px;
+left: 200px;" class="body_button">
+<a href="{% url 'commissions:commission' %}">
+Commission</a></button>
+
+<button style="position: relative;
+display: inline-block;
+position: absolute;
+top: 900px;
+left: 510px;" class="body_button">
+
+<a href="{% url 'wiki:article-list' %}">
+Wiki</a></button>
+
+<button style="position: relative;
+display: inline-block;
+position: absolute;
+top: 820px;
+left: 710px;" class="body_button">
+<a href="{% url 'merchstore:product-list' %}">
+    Merchstore</a></button>
+{% endblock %}

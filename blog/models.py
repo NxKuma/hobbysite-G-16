@@ -3,6 +3,7 @@ from datetime import datetime
 from django.db import models
 from django.urls import reverse
 
+from user_management import models as profile_models
 
 class ArticleCategory(models.Model):
     name = models.CharField(max_length=255)
@@ -20,13 +21,20 @@ class ArticleCategory(models.Model):
 
 class Article(models.Model):
     title = models.CharField(max_length=255)
-    article_category = models.ForeignKey(
+    author = models.ForeignKey(
+        profile_models.Profile,
+        on_delete=models.SET_NULL,
+        related_name='articles',  
+        null=True
+    )
+    category = models.ForeignKey(
         'ArticleCategory',
-        on_delete = models.SET_NULL,
-        related_name='article',
-        null = True
+        on_delete=models.SET_NULL,
+        related_name='articles',  
+        null=True
     )
     entry = models.TextField()
+    image = models.ImageField(upload_to='images/', null=True, blank=True)
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
 
@@ -38,3 +46,23 @@ class Article(models.Model):
 
     class Meta:
         ordering = ['-created_on',]
+
+class Comment(models.Model):
+    author = models.ForeignKey(
+        profile_models.Profile,
+        on_delete=models.SET_NULL,
+        related_name='comment_authors', 
+        null=True
+    )
+    article = models.ForeignKey(
+        Article, 
+        on_delete=models.CASCADE,
+        related_name='comments',  
+    )
+    entry = models.TextField()
+    created_on = models.DateTimeField(auto_now_add=True)
+    updated_on = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_on',]
+

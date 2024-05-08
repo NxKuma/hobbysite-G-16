@@ -1,11 +1,12 @@
 from django.contrib import admin
 
-from .models import Article, ArticleCategory
-
+from .models import Article, ArticleCategory, Comment
 
 class ArticleInLine(admin.StackedInline):
     model = Article
 
+class CommentInLine(admin.StackedInline):
+    model = Comment
 
 class ArticleCategoryAdmin(admin.ModelAdmin):
     model = ArticleCategory

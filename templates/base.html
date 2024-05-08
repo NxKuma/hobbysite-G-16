@@ -1,31 +1,35 @@
+{% load static %}
 <html>
 <head>
     <title>{% block title %}{% endblock %}</title>
-    <style>
-        body{
-            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-            background-color: #FEECE2;
-            color:#561C24;
-            font-size: large;
-            padding-left: 4%;
-        }
-        
-        header{
-            background-color: #FFBE98;
-            color:#561C24;
-            padding-top: 3%;
-            font-size: 200%;
-            padding-left: 0.5%;
-        }        
-    </style>
-
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    {% block style %}{% endblock %}
 </head>
 <body>
     <header>
+        <center>
         <h1>(～￣▽￣)～☆ HOBBYSITE ☆～(￣▽￣～)</h1>
+        </center>
     </header>
+    <p class="navbar" id="navbar">
+        <a href="{% url 'user_management:index' %}" class="btn {% if 'index' in request.resolver_match.view_name %}active{% endif %}">Dashboard</a>
+        <a href="{% url 'merchstore:product-list' %}" class="btn {% if 'merchstore' in request.resolver_match.view_name %}active{% endif %}">Merchstore</a>
+        <a href="{% url 'commissions:commission' %}" class="btn {% if 'commission' in request.resolver_match.view_name %}active{% endif %}">Commission</a>
+        <a href="{% url 'blog:article-list' %}" class="btn {% if 'blog' in request.resolver_match.view_name %}active{% endif %}">Blog</a>
+        <a href="{% url 'wiki:article-list' %}" class="btn {% if 'wiki' in request.resolver_match.view_name %}active{% endif %}">Wiki</a>
+        <a href="{% url 'forum:thread-list' %}" class="btn {% if 'forum' in request.resolver_match.view_name %}active{% endif %}">Forum</a>
+        {% if request.user.is_authenticated %}
+            <button type="submit" class="header_button"><a href="{% url 'logout' %}" id="log">Log Out</a></button>
+        {% else %}
+            <button type="submit" class="header_button"><a href="{% url 'login' %}">Login</a></button>
+        {% endif %}
+        <a href="{% url 'user_management:register' %}" id="log">Sign Up</a>
+    </p>
+
     <div id="content">
         {% block content %}{% endblock %}
     </div>
+    {% block script %}{% endblock %}
+
 </body>
 </html>
