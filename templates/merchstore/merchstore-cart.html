@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 
-{% block title %}Merchandise Store{% endblock title %}
+{% block title %}Cart{% endblock title %}
 
 {% block content %}
     <h1>Your Cart</h1>
+    <h3><a href="{% url 'merchstore:product-list' %}">Back to list</a></h3> 
 
     {% for seller in list_of_sellers %}
         {% if seller.user.username != request.user.username %}

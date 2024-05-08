@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 
-{% block title %}Merchandise Store{% endblock title %}
+{% block title %}Products{% endblock title %}
 
 {% block content %}
     <h1>Merchandise Store</h1>
+    <h3><a href="{% url 'merchstore:product-list' %}">Back to list</a></h3> 
 
     {% if request.user.is_authenticated %}
         <h2>My Products</h2>
