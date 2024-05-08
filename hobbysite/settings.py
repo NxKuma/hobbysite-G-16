@@ -65,6 +65,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             os.path.join(BASE_DIR, "templates"), 
+            os.path.join(BASE_DIR, "templates/registration"), 
             os.path.join(BASE_DIR, "templates/forum"),
             os.path.join(BASE_DIR, "templates/wiki"),
             os.path.join(BASE_DIR, "templates/merchstore"),
@@ -137,8 +138,8 @@ STATICFILES_DIRS = [
 ]
 MEDIA_URL='/media/'
 MEDIA_ROOT=BASE_DIR/'media'
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 

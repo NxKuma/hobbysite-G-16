@@ -23,6 +23,7 @@
         {% else %}
             <button class="header_button"><a href="{% url 'login' %}">Login</a></button>
         {% endif %}
+        <a href="{% url 'user_management:register' %}" id="log">Sign Up</a>
     </p>
 
     <div id="content">
